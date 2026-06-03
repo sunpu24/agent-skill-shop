@@ -1,0 +1,519 @@
+\documentclass[UTF8,a4paper,12pt]{ctexart}
+
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{makecell}
+\usepackage{tabularx}
+
+\geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
+\setstretch{1.35}
+\graphicspath{{figures_credit_default_overleaf/}}
+\captionsetup{font=small, labelfont=bf}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.15}
+
+% 校徽图片：请将 swufe_logo.jpg 与 main.tex 放在 Overleaf 同一级目录。
+\newcommand{\swufelogo}{\includegraphics[width=10cm]{swufe_logo.jpg}}
+
+\title{基于多维评价模型的 AI Agent Skills 分领域推荐集合构建与可视化分析}
+\author{孙溥、魏振邦\\西南财经大学 计算机与人工智能学院}
+\date{2025--2026学年第二学期}
+
+\begin{document}
+\begin{titlepage}
+\centering
+\vspace*{0.9cm}
+\noindent\makebox[\textwidth][c]{\raisebox{-9cm}[0pt][0pt]{\swufelogo}}\par
+\vspace{-\baselineskip}
+{\zihao{0}\heiti 西南财经大学\par}
+\vspace{0.4cm}
+{\zihao{1} Southwestern University of Finance and Economics\par}
+\vspace{1.0cm}
+{\zihao{0}\heiti 课程论文\par}
+\vspace{3.5cm}
+\renewcommand{\arraystretch}{1.8}
+\begin{tabular}{>{\heiti}r p{9cm}}
+学年学期： & 2025--2026--2 \\
+课程名称： & 数据可视化 \\
+论文题目： & 基于多维评价模型的 AI Agent Skills 分领域推荐集合构建与可视化分析 \\
+小组成员： & 孙溥、魏振邦 \\
+学院： & 计算机与人工智能学院 \\
+年级专业： & 23级计算机科学与技术 \\
+\end{tabular}
+\vfill
+{\zihao{4} \today\par}
+\end{titlepage}
+\renewcommand{\arraystretch}{1.15}
+
+\tableofcontents
+\newpage
+
+\section*{摘要}
+\addcontentsline{toc}{section}{摘要}
+随着 AI Agent 应用生态的发展，面向特定任务的 Skill 数量快速增长，覆盖代码开发、营销增长、科研分析、文档处理、检索增强生成、安全审计等多个领域。由于 Skill 来源复杂、领域分散、项目质量差异明显，使用者难以仅依据原始列表快速判断不同场景下哪些 Skill 更值得优先采用。本文基于公开 AI Agent Skills 数据集，结合预处理后的 Skill 列表与 GitHub 仓库指标，构建了一个面向不同应用领域的 Skill 推荐集合。研究首先区分官方 Skill 与社区 Skill，然后对社区 Skill 进行应用场景划分，并从场景匹配度、GitHub 热度、维护活跃度、文档质量、项目可信度和功能明确度六个维度建立推荐评分模型。最后，本文通过多种数据可视化图表展示数据来源结构、场景分布、评分结果、技术栈特征和推荐集合构成。结果表明，AI Agent Skills 生态同时具有官方机构集中供给和社区多场景扩展的特点；通过分领域推荐集合，可以有效降低 Skill 选择成本，为后续 AI Agent 应用开发和资源发现提供参考。
+
+\noindent\textbf{关键词：}AI Agent；Skill 推荐；数据可视化；多维评价模型；GitHub 指标；分领域推荐集合
+
+\newpage
+
+\section{引言}
+
+近年来，AI Agent 从单一问答式应用逐渐转向能够调用工具、执行任务、处理复杂工作流的智能系统。在这一过程中，Skill 可以被理解为面向特定任务的能力封装。例如，一个 Skill 可能用于代码审查、SEO 分析、简历优化、法律合规文档处理、科研论文分析或向量检索优化。随着开源社区和官方机构不断发布新的 Skill，用户面对的资源数量迅速增加。
+
+然而，原始 Skill 列表通常只提供名称、链接和简短描述，缺乏统一的领域归类和质量评价。对于使用者而言，真正有价值的问题并不是"数据集中有多少 Skill"，而是"在某一类任务场景下，哪些 Skill 更值得优先使用"。因此，本项目的核心目标是构建一个\textbf{面向不同应用领域的 AI Agent Skills 推荐集合}，并通过可视化方式解释推荐集合的形成依据。
+
+本文围绕以下问题展开：第一，如何从原始 Skill 数据中区分官方来源与社区来源；第二，如何将社区 Skill 划分到不同应用领域；第三，如何建立多维评价模型衡量 Skill 的推荐价值；第四，如何将推荐结果组织成官方 Skill 集合和社区分领域推荐集合；第五，如何利用图表展示推荐集合的结构和质量特征。
+
+\section{数据来源与预处理}
+
+\subsection{数据来源}
+
+本文使用的数据来源于 VoltAgent/awesome-agent-skills 公开项目。数据预处理阶段通过爬取 README 中的 Skill 条目，获得 Skill 名称、描述、链接和原始分类等字段。同时，对于 GitHub 社区项目，进一步补充仓库指标，包括 Stars、Forks、主要语言、更新时间、README 长度、许可证和项目状态等。
+
+经过预处理后，数据集中共包含 1114 条 Skill 记录，其中官方 Skill 为 586 条，社区 Skill 为 528 条。官方 Skill 主要来自 officialskills.sh 等来源，社区 Skill 则主要来自 GitHub 仓库。本文将官方 Skill 用于官方机构推荐集合构建，将社区 Skill 作为分领域推荐集合的主要对象。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.68\textwidth]{fig01_source_structure_pie.png}
+\caption{Skill 数据来源结构}
+\label{fig:source}
+\end{figure}
+
+如图\ref{fig:source}所示，官方 Skill 与社区 Skill 共同构成了数据集主体。官方 Skill 数量略高于社区 Skill，说明 AI Agent Skill 生态既依赖官方机构提供标准化能力，也依赖社区开源项目进行多样化扩展。
+
+\subsection{数据预处理流程}
+
+数据预处理主要包括四个步骤。第一，解析原始 Skill 列表，提取名称、描述、链接和原始分类。第二，根据链接判断 Skill 来源，将其划分为官方 Skill 和社区 Skill。第三，对于社区 GitHub 项目，补充 Stars、Forks、主要语言、更新时间、README 长度等指标。第四，根据名称、描述和分类关键词，对社区 Skill 进行应用场景归类。
+
+\section{推荐集合构建方法}
+
+\subsection{应用场景划分}
+
+为了构建分领域推荐集合，本文将社区 Skill 划分为多个应用场景，包括网络安全、法律合同、金融分析、教育学习、科研论文、电商零售、增长广告、社媒运营、视频创作、图片生成、语音音频、写作文案、办公文档、编程开发、自动工作流、提示工程、大模型、数据检索等。
+
+该分类方式并不只是为了统计数量，更重要的是服务于推荐集合构建：只有先明确 Skill 所属领域，才能在每个领域内部进行排序和筛选。
+
+\subsection{多维评价模型}
+
+本文采用 100 分制推荐评分模型。评分由六个维度组成：场景匹配度、GitHub 热度、维护活跃度、文档质量、项目可信度和功能明确度。其中，场景匹配度用于判断 Skill 与应用领域的相关程度；GitHub 热度主要参考 Stars 和 Forks；维护活跃度根据最近更新时间衡量；文档质量参考 README 完整程度；项目可信度综合许可证、项目状态和数据获取状态；功能明确度依据描述文本是否清晰体现动作和用途。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig09_score_dimension_heatmap.png}
+\caption{不同应用场景的评分维度均值热力图}
+\label{fig:heatmap}
+\end{figure}
+
+图\ref{fig:heatmap}展示了不同应用场景在各评分维度上的平均表现。该图有助于解释某些领域推荐得分较高的原因。例如，一些开发、自动化和安全相关 Skill 往往在 GitHub 热度、维护活跃度和文档质量方面表现更强，而部分垂直领域 Skill 可能在场景匹配度上较高，但项目热度或维护指标相对不足。
+
+\subsection{推荐等级划分}
+
+根据综合评分，本文将社区 Skill 映射为五档推荐等级：85 分及以上为五星"夯"，70--84 分为四星"顶级"，55--69 分为三星"人上人"，40--54 分为二星"NPC"，40 分以下为一星"拉完了"。该等级划分用于降低结果解释难度，使推荐集合不仅包含数值评分，也能提供直观的优先级判断。
+
+\section{可视化分析结果}
+
+\subsection{官方 Skill 供给结构}
+
+官方 Skill 主要由若干机构集中提供。图\ref{fig:official}展示了官方机构 Skill 数量 Top 15。可以看到，Microsoft、OpenAI、getsentry 等机构在官方 Skill 供给中占据较高位置，说明头部机构对 Skill 生态标准化建设具有重要影响。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.9\textwidth]{fig02_official_company_top15_bar.png}
+\caption{官方机构 Skill 供给数量 Top 15}
+\label{fig:official}
+\end{figure}
+
+\subsection{社区 Skill 场景分布}
+
+社区 Skill 是分领域推荐集合的主要来源。图\ref{fig:scenario}展示了社区 Skill 应用场景数量分布 Top 15。从图中可以看出，社区 Skill 覆盖了开发、自动化、RAG、内容生产、营销增长、安全、科研等多个方向，体现出 AI Agent Skill 正在从通用能力扩展到垂直任务场景。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{fig03_community_scenario_top15_bar.png}
+\caption{社区 Skill 应用场景数量分布 Top 15}
+\label{fig:scenario}
+\end{figure}
+
+\subsection{推荐评级与得分分布}
+
+图\ref{fig:rating}展示了社区 Skill 推荐评级分布。评级分布能够反映社区项目整体质量结构。如果高评级 Skill 占比较高，说明社区中已经存在较多具有较好维护、文档和热度表现的项目；如果中低评级占比较高，则说明推荐系统有助于从大量项目中筛选更可靠的对象。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig04_rating_distribution_bar.png}
+\caption{社区 Skill 推荐评级分布}
+\label{fig:rating}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.82\textwidth]{fig05_recommend_score_histogram.png}
+\caption{社区 Skill 综合推荐得分分布}
+\label{fig:scorehist}
+\end{figure}
+
+图\ref{fig:scorehist}进一步展示了推荐得分的整体分布。得分分布不仅能够反映推荐集合筛选阈值的合理性，也有助于判断社区 Skill 质量是否存在明显分层。
+
+\subsection{不同场景下的推荐质量差异}
+
+不同应用领域的 Skill 数量和质量并不均衡。图\ref{fig:boxplot}通过箱线图展示主要应用场景下推荐得分差异。该图说明，在构建推荐集合时，不能只看整体排名，还需要在每个领域内部选择代表 Skill，否则热门领域可能过度占据推荐结果。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.95\textwidth]{fig06_score_boxplot_by_scenario.png}
+\caption{主要应用场景下推荐得分差异}
+\label{fig:boxplot}
+\end{figure}
+
+\subsection{社区项目技术栈与 GitHub 指标分析}
+
+图\ref{fig:language}展示了社区 GitHub 项目的主要开发语言分布。技术栈分布能够反映 Skill 生态与开源开发环境的关系。例如，Python、TypeScript、JavaScript 等语言通常与 AI 应用、自动化脚本和前端工具开发关系较密切。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{fig07_github_language_top12_bar.png}
+\caption{社区 GitHub 项目主要开发语言分布 Top 12}
+\label{fig:language}
+\end{figure}
+
+图\ref{fig:stars}展示了 GitHub Stars 与推荐得分之间的关系。Stars 代表项目受关注程度，但并不等同于推荐价值。因此本文将其作为评分维度之一，而不是唯一指标。图中可以观察到，一些高 Stars 项目推荐得分较高，但仍需要结合维护活跃度、文档质量和场景匹配度进行综合判断。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.86\textwidth]{fig08_stars_vs_score_scatter.png}
+\caption{GitHub Star 热度与推荐得分关系}
+\label{fig:stars}
+\end{figure}
+
+\subsection{维护活跃度与文档质量分析}
+
+项目是否持续维护会直接影响 Skill 的可用性。图\ref{fig:maintenance}展示了社区 GitHub 项目最近维护时间分布。较新的维护时间通常意味着项目仍在更新，使用风险相对较低。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.84\textwidth]{fig10_maintenance_recency_bar.png}
+\caption{社区 GitHub 项目最近维护时间分布}
+\label{fig:maintenance}
+\end{figure}
+
+图\ref{fig:readme}展示了 README 文档长度与推荐得分之间的关系。README 长度并不能完全代表文档质量，但较完整的文档通常有助于用户理解 Skill 的用途、配置方式和适用场景，因此被纳入推荐评分模型。
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.84\textwidth]{fig11_readme_length_vs_score.png}
+\caption{README 文档长度与推荐得分关系}
+\label{fig:readme}
+\end{figure}
+
+\subsection{分析小结与 Skill 选取建议}
+
+综合上述可视化分析，可以为实际选型工作归纳出以下几条具有操作性的选取原则。
+
+第一，先区分来源类型，再制定选取策略。图\ref{fig:source}和图\ref{fig:official}表明，官方 Skill 具有明显的机构集中特征，Microsoft、OpenAI 等头部机构提供大量标准化 Skill，适合通用任务和快速搭建原型。如果需求是文档处理（如 Anthropics 的 docx/pptx）、身份认证（如 Auth0 系列）、工作空间集成（如 Google Workspace 系列），应优先查阅官方 Skill 推荐集合；如果需求属于安全审计、SEO 分析、法律合规、电商运营等垂直领域，则应重点关注社区 Skill 分领域推荐集合。
+
+第二，避免单一指标偏见，尤其不能只看 Stars。图\ref{fig:stars}已经直观地展示了 Stars 与推荐得分之间的非线性关系——部分高 Stars 项目推荐得分并不突出，而一些中等 Stars 但维护积极、文档完整的项目反而获得了较高评分。因此，选型时应综合考虑维护活跃度（图\ref{fig:maintenance}）、文档完整度（图\ref{fig:readme}）以及项目可信度等多个维度，而非仅依据 Stars 排名。
+
+第三，坚持"同场景比较"原则。图\ref{fig:boxplot}揭示了不同应用场景下 Skill 得分的系统性差异：开发工具和自动化类 Skill 普遍在 GitHub 热度和维护活跃度方面占优，而部分垂直领域 Skill 虽然 Stars 较少但场景匹配度更高。这意味着不能简单跨领域对比推荐得分，应该在目标领域内部选择排名靠前的 Skill。
+
+第四，将维护活跃度作为硬性筛选门槛。图\ref{fig:maintenance}显示，相当一部分社区项目的最晚更新时间超过半年甚至一年以上。对于实际使用场景，建议优先选择最近一个月或三个月内有更新的项目，以降低 Skill 功能失效或依赖过时的风险。
+
+第五，借助多维评分模型辅助快速筛选。本文构建的六维推荐评分模型（场景匹配度、GitHub 热度、维护活跃度、文档质量、项目可信度、功能明确度）本质上是一套可复用的筛选框架。使用者也可以在本文基础上，根据自己的场景偏好调整各维度的权重，从而生成个性化的推荐排序。
+
+综上，推荐的选型流程为：确定应用场景 $\rightarrow$ 查看官方/社区推荐集合 $\rightarrow$ 在目标领域内按推荐得分排序 $\rightarrow$ 重点考察 Top 3--5 个 Skill 的维护状态与文档 $\rightarrow$ 结合自身技术栈和需求做出最终选择。该流程兼顾了大规模筛选的效率需求和对单个 Skill 质量的审慎判断。
+
+\section{分领域推荐集合结果}
+
+\subsection{官方 Skill 推荐集合}
+
+官方 Skill 推荐集合按照公司或机构汇总，统计每个机构收集到的 Skill 数量，并列出三个代表性 Skill。官方 Skill 不采用 GitHub Stars、Forks 和语言指标，而是强调机构供给规模和代表能力。表\ref{tab:official}列出了官方 Skill 推荐集合中的部分结果。
+
+\begin{table}[H]
+\centering
+\caption{官方 Skill 推荐集合示例}
+\label{tab:official}
+\small
+\begin{tabularx}{\textwidth}{l r X X X}
+\toprule
+公司/机构 & 数量 & 代表 Skill 1 & 代表 Skill 2 & 代表 Skill 3 \\
+\midrule
+microsoft & 133 & cloud-solution-architect & continual-learning & copilot-sdk \\
+openai & 42 & cloudflare-deploy & develop-web-game & doc \\
+getsentry & 28 & sentry-sdk-setup & sentry-workflow & sentry-fix-issues \\
+garrytan & 27 & office-hours & plan-ceo-review & plan-eng-review \\
+flutter & 22 & adding-home-screen-widgets & animating-apps & architecting-apps \\
+trailofbits & 21 & ask-questions-if-underspecified & audit-context-building & building-secure-contracts \\
+anthropics & 17 & docx & doc-coauthoring & pptx \\
+googleworkspace & 17 & gws-shared & gws-drive & gws-sheets \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+从表\ref{tab:official}可以看出，官方 Skill 具有明显的机构集中现象。Microsoft 的 Skill 数量最高，OpenAI、getsentry、garrytan 等机构也提供了较多 Skill。这说明官方来源更适合构建机构维度的推荐集合，而不是像社区项目一样依赖 GitHub 指标进行评价。
+
+\subsection{社区 Skill 分领域推荐集合}
+
+社区 Skill 推荐集合按照"场景类别"组织，而不是简单罗列 Skill 名称。为保证推荐结果质量，本文设置如下筛选规则：每个场景类别最多保留 5 个 Skill；正式推荐要求推荐得分不低于 70 分；如果某一类别没有 70 分以上的 Skill，则仅保留该类别最高分的 1 个 Skill 作为候选推荐。该规则既避免低分项目被强行纳入推荐集合，也保证每个应用领域都有代表性结果。完整明细表由程序生成，文件为 \path{table06\_community\_skill\_recommendation\_collection.csv}；正文中主要展示分领域推荐摘要表，如表\ref{tab:community-summary}所示。
+
+\begin{table}[H]
+\centering
+\caption{社区 Skill 分领域推荐摘要表（正文节选）}
+\label{tab:community-summary}
+\small
+\begin{tabularx}{\textwidth}{p{3.6cm} c c X}
+\toprule
+场景类别 & 推荐数 & 最高分 & 代表 Skill \\
+\midrule
+社媒运营 & 3 & 100 & \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/social-content}{coreyhaines31/social-content} \\
+增长广告 & 3 & 97 & \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/competitor-alternatives}{coreyhaines31/competitor-alternatives} \\
+法律合同 & 3 & 96 & \href{https://github.com/phuryn/pm-skills/tree/main/pm-toolkit/skills/privacy-policy}{phuryn/privacy-policy} \\
+编程开发 & 3 & 96 & \href{https://github.com/czlonkowski/n8n-skills/tree/main/skills/n8n-code-python}{czlonkowski/n8n-code-python} \\
+提示工程 & 3 & 96 & \href{https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-fundamentals}{muratcankoylan/context-fundamentals} \\
+办公文档 & 3 & 95 & \href{https://github.com/yusufkaraaslan/Skill_Seekers}{Skill\_Seekers} \\
+网络安全 & 3 & 94 & \href{https://github.com/mukul975/Anthropic-Cybersecurity-Skills}{mukul975/Anthropic-Cybersecurity-Skills} \\
+大模型 & 3 & 94 & \href{https://github.com/NVIDIA/skills/tree/main/skills/Model-Optimizer/launching-evals}{NVIDIA/Model-Optimizer/launching-evals} \\
+金融分析 & 3 & 93 & \href{https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/finance-based-pricing-advisor}{deanpeters/finance-based-pricing-advisor} \\
+教育学习 & 3 & 91 & \href{https://github.com/santifer/career-ops}{santifer/career-ops} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+表\ref{tab:community-summary}体现了社区推荐集合的层级结构：首先确定场景类别，再在类别内部选择高分 Skill。与单纯按照 Stars 排名不同，该推荐集合会综合考虑场景匹配、维护活跃度、文档质量和项目可信度等因素，因此更适合作为不同应用领域下的 Skill 选择参考。可以看到，大多数类别能够筛选出 3 个正式推荐，说明社区 Skill 在多个领域已经形成一定规模；而"数据检索"类别只保留 1 个推荐，说明该领域在当前数据集中高分 Skill 相对有限。
+
+表\ref{tab:community-detail}进一步列出了部分重点类别中代表性 Skill 的详细功能说明。与摘要表不同，该表不展示得分与推荐数量，而是以"Skill 名称 — 具体作用"的形式逐条说明，方便读者快速理解每个 Skill 的实际用途。
+
+\begin{table}[H]
+\centering
+\caption{部分重点类别的社区 Skill 详细介绍}
+\label{tab:community-detail}
+\small
+\begin{tabularx}{\textwidth}{p{2.8cm} X}
+\toprule
+场景类别 & 代表性 Skill 及其作用 \\
+\midrule
+网络安全 & \href{https://github.com/mukul975/Anthropic-Cybersecurity-Skills}{mukul975/Anthropic-Cybersecurity-Skills} — 38 个安全域 753 条安全技能库。
+  \newline \href{https://github.com/prompt-security/clawsec}{prompt-security/clawsec} — 安全规则检测与技能完整性验证。
+  \newline \href{https://github.com/google/skills/tree/main/skills/cloud/google-cloud-waf-security}{google/google-cloud-waf-security} — 云安全策略生成。\\
+\addlinespace
+法律合同 & \href{https://github.com/phuryn/pm-skills/tree/main/pm-toolkit/skills/privacy-policy}{phuryn/privacy-policy} — 隐私政策起草与合规支持。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-product-strategy/skills/pestle-analysis}{phuryn/pestle-analysis} — PESTLE 多维度分析框架。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/NemoClaw/nemoclaw-user-manage-policy}{NVIDIA/nemoclaw-user-manage-policy} — 沙箱端点权限管理。\\
+\addlinespace
+金融分析 & \href{https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/finance-based-pricing-advisor}{deanpeters/finance-based-pricing-advisor} — 财务影响分析与定价决策。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/pricing-strategy}{coreyhaines31/pricing-strategy} — SaaS 定价与包装策略。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-product-strategy/skills/business-model}{phuryn/business-model} — 9 要素商业模式画布生成。\\
+\addlinespace
+教育学习 & \href{https://github.com/santifer/career-ops}{santifer/career-ops} — 14 个 AI 求职技能：职位评估、ATS 简历 PDF 生成。
+  \newline \href{https://github.com/Paramchoudhary/ResumeSkills}{Paramchoudhary/ResumeSkills} — 20 项简历优化与面试准备技能。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-product-discovery/skills/interview-script}{phuryn/interview-script} — 结构化客户访谈脚本。\\
+\addlinespace
+数据检索 & \href{https://github.com/NVIDIA/skills/tree/main/skills/rag/rag-blueprint}{NVIDIA/rag/rag-blueprint} — RAG 蓝图部署、配置、故障排查与管理。\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{讨论}
+
+本文构建的推荐集合具有三个方面的意义。第一，它将原始 Skill 列表从无序资源转化为按领域组织的推荐结果，降低了用户检索成本。第二，多维评分模型避免了只依据 GitHub Stars 判断项目价值的问题，使推荐结果更具解释性。第三，可视化分析为推荐集合提供了依据，使读者能够理解不同领域 Skill 的数量分布、质量差异和技术特征。
+
+当然，本文仍存在一定局限。首先，场景分类主要依赖关键词规则，可能存在部分误分类。其次，GitHub 指标只能反映开源项目的部分质量特征，不能完全代表 Skill 的真实可用性。再次，官方 Skill 缺少统一的外部热度指标，因此本文对官方 Skill 主要采用机构聚合和代表样本展示，而未与社区 Skill 采用完全相同的评分方式。
+
+\section{结论与展望}
+
+本文基于 AI Agent Skills 数据集，构建了一个面向不同应用领域的 Skill 推荐集合，并通过数据可视化方法解释推荐结果。研究表明，AI Agent Skills 生态既包含官方机构的大规模标准化供给，也包含社区项目的多领域创新扩展。通过领域划分和多维评分，可以在不同应用场景中筛选出更具代表性的 Skill，为开发者和使用者提供更清晰的资源选择依据。
+
+未来可以从三个方向进一步改进。第一，引入更多质量指标，如 Issue 活跃度、贡献者数量、提交频率和下载量。第二，使用文本语义模型改进场景分类，降低关键词规则带来的误差。第三，结合用户反馈或实际调用效果，建立更贴近真实使用体验的推荐模型。
+
+\appendix
+
+\newpage
+\section{官方 Skill 推荐集合补充表}
+
+表\ref{tab:appendix-official}给出官方 Skill 推荐集合的补充结果。由于官方 Skill 缺少统一的 GitHub 热度指标，本文主要按公司或机构进行聚合，并列出代表性 Skill。完整表格由程序输出为 \texttt{table05\_official\_skill\_recommendation\_collection.csv}。
+
+\begin{longtable}{p{2.8cm} r p{4.2cm} p{4.2cm} p{4.2cm}}
+\caption{官方 Skill 推荐集合补充表}\label{tab:appendix-official}\\
+\toprule
+公司/机构 & 数量 & 代表 Skill 1 & 代表 Skill 2 & 代表 Skill 3 \\
+\midrule
+\endfirsthead
+\toprule
+公司/机构 & 数量 & 代表 Skill 1 & 代表 Skill 2 & 代表 Skill 3 \\
+\midrule
+\endhead
+microsoft & 133 & \href{https://officialskills.sh/microsoft/skills/cloud-solution-architect}{cloud-solution-architect} & \href{https://officialskills.sh/microsoft/skills/continual-learning}{continual-learning} & \href{https://officialskills.sh/microsoft/skills/copilot-sdk}{copilot-sdk} \\
+openai & 42 & \href{https://officialskills.sh/openai/skills/cloudflare-deploy}{cloudflare-deploy} & \href{https://officialskills.sh/openai/skills/develop-web-game}{develop-web-game} & \href{https://officialskills.sh/openai/skills/doc}{doc} \\
+getsentry & 28 & \href{https://officialskills.sh/getsentry/skills/sentry-sdk-setup}{sentry-sdk-setup} & \href{https://officialskills.sh/getsentry/skills/sentry-workflow}{sentry-workflow} & \href{https://officialskills.sh/getsentry/skills/sentry-fix-issues}{sentry-fix-issues} \\
+garrytan & 27 & \href{https://officialskills.sh/garrytan/skills/office-hours}{office-hours} & \href{https://officialskills.sh/garrytan/skills/plan-ceo-review}{plan-ceo-review} & \href{https://officialskills.sh/garrytan/skills/plan-eng-review}{plan-eng-review} \\
+flutter & 22 & \href{https://officialskills.sh/flutter/skills/flutter-adding-home-screen-widgets}{flutter-adding-home-screen-widgets} & \href{https://officialskills.sh/flutter/skills/flutter-animating-apps}{flutter-animating-apps} & \href{https://officialskills.sh/flutter/skills/flutter-architecting-apps}{flutter-architecting-apps} \\
+trailofbits & 21 & \href{https://officialskills.sh/trailofbits/skills/ask-questions-if-underspecified}{ask-questions-if-underspecified} & \href{https://officialskills.sh/trailofbits/skills/audit-context-building}{audit-context-building} & \href{https://officialskills.sh/trailofbits/skills/building-secure-contracts}{building-secure-contracts} \\
+anthropics & 17 & \href{https://officialskills.sh/anthropics/skills/docx}{docx} & \href{https://officialskills.sh/anthropics/skills/doc-coauthoring}{doc-coauthoring} & \href{https://officialskills.sh/anthropics/skills/pptx}{pptx} \\
+googleworkspace & 17 & \href{https://officialskills.sh/googleworkspace/skills/gws-shared}{gws-shared} & \href{https://officialskills.sh/googleworkspace/skills/gws-drive}{gws-drive} & \href{https://officialskills.sh/googleworkspace/skills/gws-sheets}{gws-sheets} \\
+fal-ai-community & 15 & \href{https://officialskills.sh/fal-ai-community/skills/fal-3d}{fal-3d} & \href{https://officialskills.sh/fal-ai-community/skills/fal-audio}{fal-audio} & \href{https://officialskills.sh/fal-ai-community/skills/fal-generate}{fal-generate} \\
+auth0 & 14 & \href{https://officialskills.sh/auth0/skills/auth0-android}{auth0-android} & \href{https://officialskills.sh/auth0/skills/auth0-angular}{auth0-angular} & \href{https://officialskills.sh/auth0/skills/auth0-aspnetcore-api}{auth0-aspnetcore-api} \\
+huggingface & 13 & \href{https://officialskills.sh/huggingface/skills/hf-cli}{hf-cli} & \href{https://officialskills.sh/huggingface/skills/hugging-face-dataset-viewer}{hugging-face-dataset-viewer} & \href{https://officialskills.sh/huggingface/skills/hugging-face-datasets}{hugging-face-datasets} \\
+WordPress & 13 & \href{https://officialskills.sh/WordPress/skills/wordpress-router}{wordpress-router} & \href{https://officialskills.sh/WordPress/skills/wp-project-triage}{wp-project-triage} & \href{https://officialskills.sh/WordPress/skills/wp-block-development}{wp-block-development} \\
+apollographql & 13 & \href{https://officialskills.sh/apollographql/skills/apollo-client}{apollo-client} & \href{https://officialskills.sh/apollographql/skills/apollo-connectors}{apollo-connectors} & \href{https://officialskills.sh/apollographql/skills/apollo-federation}{apollo-federation} \\
+netlify & 12 & \href{https://officialskills.sh/netlify/skills/netlify-functions}{netlify-functions} & \href{https://officialskills.sh/netlify/skills/netlify-edge-functions}{netlify-edge-functions} & \href{https://officialskills.sh/netlify/skills/netlify-blobs}{netlify-blobs} \\
+firebase & 12 & \href{https://officialskills.sh/firebase/skills/developing-genkit-dart}{developing-genkit-dart} & \href{https://officialskills.sh/firebase/skills/developing-genkit-go}{developing-genkit-go} & \href{https://officialskills.sh/firebase/skills/developing-genkit-js}{developing-genkit-js} \\
+hashicorp & 11 & \href{https://officialskills.sh/hashicorp/skills/azure-verified-modules}{azure-verified-modules} & \href{https://officialskills.sh/hashicorp/skills/new-terraform-provider}{new-terraform-provider} & \href{https://officialskills.sh/hashicorp/skills/provider-resources}{provider-resources} \\
+expo & 11 & \href{https://officialskills.sh/expo/skills/building-native-ui}{building-native-ui} & \href{https://officialskills.sh/expo/skills/expo-api-routes}{expo-api-routes} & \href{https://officialskills.sh/expo/skills/expo-cicd-workflows}{expo-cicd-workflows} \\
+brave & 11 & \href{https://officialskills.sh/brave/skills/answers}{answers} & \href{https://officialskills.sh/brave/skills/bx}{bx} & \href{https://officialskills.sh/brave/skills/images-search}{images-search} \\
+MiniMax-AI & 11 & \href{https://officialskills.sh/MiniMax-AI/skills/cli}{cli} & \href{https://officialskills.sh/MiniMax-AI/skills/frontend-dev}{frontend-dev} & \href{https://officialskills.sh/MiniMax-AI/skills/fullstack-dev}{fullstack-dev} \\
+coinbase & 9 & \href{https://officialskills.sh/coinbase/skills/authenticate-wallet}{authenticate-wallet} & \href{https://officialskills.sh/coinbase/skills/fund}{fund} & \href{https://officialskills.sh/coinbase/skills/monetize-service}{monetize-service} \\
+cloudflare & 8 & \href{https://officialskills.sh/cloudflare/skills/agents-sdk}{agents-sdk} & \href{https://officialskills.sh/cloudflare/skills/cloudflare}{cloudflare} & \href{https://officialskills.sh/cloudflare/skills/cloudflare-email-service}{cloudflare-email-service} \\
+datadog-labs & 8 & \href{https://officialskills.sh/datadog-labs/skills/dd-apm}{dd-apm} & \href{https://officialskills.sh/datadog-labs/skills/dd-docs}{dd-docs} & \href{https://officialskills.sh/datadog-labs/skills/dd-llmo-eval-bootstrap}{dd-llmo-eval-bootstrap} \\
+greensock & 8 & \href{https://officialskills.sh/greensock/skills/gsap-core}{gsap-core} & \href{https://officialskills.sh/greensock/skills/gsap-timeline}{gsap-timeline} & \href{https://officialskills.sh/greensock/skills/gsap-scrolltrigger}{gsap-scrolltrigger} \\
+makenotion & 8 & \href{https://officialskills.sh/makenotion/skills/knowledge-capture}{knowledge-capture} & \href{https://officialskills.sh/makenotion/skills/meeting-intelligence}{meeting-intelligence} & \href{https://officialskills.sh/makenotion/skills/research-documentation}{research-documentation} \\
+better-auth & 7 & \href{https://officialskills.sh/better-auth/skills/best-practices}{best-practices} & \href{https://officialskills.sh/better-auth/skills/explain-error}{explain-error} & \href{https://officialskills.sh/better-auth/skills/providers}{providers} \\
+vercel-labs & 7 & \href{https://officialskills.sh/vercel-labs/skills/react-best-practices}{react-best-practices} & \href{https://officialskills.sh/vercel-labs/skills/web-design-guidelines}{web-design-guidelines} & \href{https://officialskills.sh/vercel-labs/skills/composition-patterns}{composition-patterns} \\
+figma & 7 & \href{https://officialskills.sh/figma/skills/figma-code-connect-components}{figma-code-connect-components} & \href{https://officialskills.sh/figma/skills/figma-create-design-system-rules}{figma-create-design-system-rules} & \href{https://officialskills.sh/figma/skills/figma-create-new-file}{figma-create-new-file} \\
+binance & 7 & \href{https://officialskills.sh/binance/skills/crypto-market-rank}{crypto-market-rank} & \href{https://officialskills.sh/binance/skills/meme-rush}{meme-rush} & \href{https://officialskills.sh/binance/skills/query-address-info}{query-address-info} \\
+browserbase & 7 & \href{https://officialskills.sh/browserbase/skills/browser}{browser} & \href{https://officialskills.sh/browserbase/skills/browserbase-cli}{browserbase-cli} & \href{https://officialskills.sh/browserbase/skills/cookie-sync}{cookie-sync} \\
+mongodb & 7 & \href{https://officialskills.sh/mongodb/skills/mongodb-mcp-setup}{mongodb-mcp-setup} & \href{https://officialskills.sh/mongodb/skills/mongodb-connection}{mongodb-connection} & \href{https://officialskills.sh/mongodb/skills/mongodb-schema-design}{mongodb-schema-design} \\
+clickhouse & 6 & \href{https://officialskills.sh/clickhouse/skills/clickhouse-best-practices}{clickhouse-best-practices} & \href{https://officialskills.sh/clickhouse/skills/chdb-datastore}{chdb-datastore} & \href{https://officialskills.sh/clickhouse/skills/chdb-sql}{chdb-sql} \\
+google-labs-code & 6 & \href{https://officialskills.sh/google-labs-code/skills/design-md}{design-md} & \href{https://officialskills.sh/google-labs-code/skills/enhance-prompt}{enhance-prompt} & \href{https://officialskills.sh/google-labs-code/skills/react-components}{react-components} \\
+duckdb & 6 & \href{https://officialskills.sh/duckdb/skills/attach-db}{attach-db} & \href{https://officialskills.sh/duckdb/skills/query}{query} & \href{https://officialskills.sh/duckdb/skills/read-file}{read-file} \\
+addyosmani & 6 & \href{https://officialskills.sh/addyosmani/skills/web-quality-audit}{web-quality-audit} & \href{https://officialskills.sh/addyosmani/skills/performance}{performance} & \href{https://officialskills.sh/addyosmani/skills/core-web-vitals}{core-web-vitals} \\
+firecrawl & 5 & \href{https://officialskills.sh/firecrawl/skills/firecrawl-build}{firecrawl-build} & \href{https://officialskills.sh/firecrawl/skills/firecrawl-build-interact}{firecrawl-build-interact} & \href{https://officialskills.sh/firecrawl/skills/firecrawl-build-onboarding}{firecrawl-build-onboarding} \\
+voltagent & 4 & \href{https://officialskills.sh/voltagent/skills/create-voltagent}{create-voltagent} & \href{https://officialskills.sh/voltagent/skills/voltagent-best-practices}{voltagent-best-practices} & \href{https://officialskills.sh/voltagent/skills/voltagent-core-reference}{voltagent-core-reference} \\
+google-gemini & 4 & \href{https://officialskills.sh/google-gemini/skills/gemini-api-dev}{gemini-api-dev} & \href{https://officialskills.sh/google-gemini/skills/vertex-ai-api-dev}{vertex-ai-api-dev} & \href{https://officialskills.sh/google-gemini/skills/gemini-live-api-dev}{gemini-live-api-dev} \\
+tinybirdco & 4 & \href{https://officialskills.sh/tinybirdco/skills/tinybird-best-practices}{tinybird-best-practices} & \href{https://officialskills.sh/tinybirdco/skills/tinybird-cli-guidelines}{tinybird-cli-guidelines} & \href{https://officialskills.sh/tinybirdco/skills/tinybird-python-sdk-guidelines}{tinybird-python-sdk-guidelines} \\
+sanity-io & 4 & \href{https://officialskills.sh/sanity-io/skills/sanity-best-practices}{sanity-best-practices} & \href{https://officialskills.sh/sanity-io/skills/content-modeling-best-practices}{content-modeling-best-practices} & \href{https://officialskills.sh/sanity-io/skills/seo-aeo-best-practices}{seo-aeo-best-practices} \\
+callstackincubator & 3 & \href{https://officialskills.sh/callstackincubator/skills/react-native-best-practices}{react-native-best-practices} & \href{https://officialskills.sh/callstackincubator/skills/github}{github} & \href{https://officialskills.sh/callstackincubator/skills/upgrading-react-native}{upgrading-react-native} \\
+neondatabase & 3 & \href{https://officialskills.sh/neondatabase/skills/neon-postgres}{neon-postgres} & \href{https://officialskills.sh/neondatabase/skills/claimable-postgres}{claimable-postgres} & \href{https://officialskills.sh/neondatabase/skills/neon-postgres-egress-optimizer}{neon-postgres-egress-optimizer} \\
+stripe & 2 & \href{https://officialskills.sh/stripe/skills/stripe-best-practices}{stripe-best-practices} & \href{https://officialskills.sh/stripe/skills/upgrade-stripe}{upgrade-stripe} & — \\
+coderabbitai & 2 & \href{https://officialskills.sh/coderabbitai/skills/autofix}{autofix} & \href{https://officialskills.sh/coderabbitai/skills/code-review}{code-review} & — \\
+composiohq & 1 & \href{https://officialskills.sh/composiohq/skills/composio}{composio} & — & — \\
+supabase & 1 & \href{https://officialskills.sh/supabase/skills/postgres-best-practices}{postgres-best-practices} & — & — \\
+remotion-dev & 1 & \href{https://officialskills.sh/remotion-dev/skills/remotion}{remotion} & — & — \\
+replicate & 1 & \href{https://officialskills.sh/replicate/skills/replicate}{replicate} & — & — \\
+typefully & 1 & \href{https://officialskills.sh/typefully/skills/typefully}{typefully} & — & — \\
+\bottomrule
+\end{longtable}
+
+\section{社区 Skill 分领域推荐集合补充表}
+
+表\ref{tab:appendix-community-summary}给出全部 21 个场景类别的代表性社区 Skill 详细说明，不展示得分与推荐数量，而是以"Skill 名称 — 具体作用"的形式逐条描述。
+
+\begingroup
+\small
+\begin{longtable}{p{2.6cm} p{12cm}}
+\caption{社区 Skill 分领域推荐详细介绍完整表}\label{tab:appendix-community-summary}\\
+\toprule
+场景类别 & 代表性 Skill 及其作用 \\
+\midrule
+\endfirsthead
+\toprule
+场景类别 & 代表性 Skill 及其作用 \\
+\midrule
+\endhead
+社媒运营 & \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/social-content}{coreyhaines31/social-content} — 社交平台内容发布与运营。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/onboarding-cro}{coreyhaines31/onboarding-cro} — 社媒内容运营与发布。
+  \newline \href{https://github.com/Xquik-dev/x-twitter-scraper}{Xquik-dev/x-twitter-scraper} — 社交平台内容发布与运营。\\
+\addlinespace
+增长广告 & \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/competitor-alternatives}{coreyhaines31/competitor-alternatives} — 网站搜索优化与增长分析。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/copywriting}{coreyhaines31/copywriting} — 写作辅助与文本优化。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/page-cro}{coreyhaines31/page-cro} — 搜索优化、增长与广告投放。\\
+\addlinespace
+法律合同 & \href{https://github.com/phuryn/pm-skills/tree/main/pm-toolkit/skills/privacy-policy}{phuryn/privacy-policy} — 法律合规与政策文档处理。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-product-strategy/skills/pestle-analysis}{phuryn/pestle-analysis} — 法律合规与政策文档处理。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/NemoClaw/nemoclaw-user-manage-policy}{NVIDIA/nemoclaw-user-manage-policy} — 大模型系统策略管理与合规控制。\\
+\addlinespace
+编程开发 & \href{https://github.com/czlonkowski/n8n-skills/tree/main/skills/n8n-code-python}{czlonkowski/n8n-code-python} — 编程开发辅助。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/deepstream/deepstream-dev}{NVIDIA/deepstream/deepstream-dev} — 编程开发辅助。
+  \newline \href{https://github.com/czlonkowski/n8n-skills/tree/main/skills/n8n-code-javascript}{czlonkowski/n8n-code-javascript} — 编程开发与框架实践。\\
+\addlinespace
+提示工程 & \href{https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/context-fundamentals}{muratcankoylan/context-fundamentals} — 智能体工作流与任务协作。
+  \newline \href{https://github.com/muratcankoylan/Agent-Skills-for-Context-Engineering/tree/main/skills/multi-agent-patterns}{muratcankoylan/multi-agent-patterns} — 智能体工作流与任务协作。
+  \newline \href{https://github.com/obra/superpowers/blob/main/skills/dispatching-parallel-agents/SKILL.md}{obra/dispatching-parallel-agents} — 智能体工作流与任务协作。\\
+\addlinespace
+办公文档 & \href{https://github.com/yusufkaraaslan/Skill_Seekers}{Skill\_Seekers} — PDF 文档处理与转换。
+  \newline \href{https://github.com/zarazhangrui/frontend-slides}{zarazhangrui/frontend-slides} — 演示文稿生成与美化。
+  \newline \href{https://github.com/kreuzberg-dev/kreuzberg/tree/main/skills/kreuzberg}{kreuzberg-dev/kreuzberg} — 文档处理与知识整理。\\
+\addlinespace
+网络安全 & \href{https://github.com/mukul975/Anthropic-Cybersecurity-Skills}{mukul975/Anthropic-Cybersecurity-Skills} — 安全审计与漏洞防护。
+  \newline \href{https://github.com/prompt-security/clawsec}{prompt-security/clawsec} — 安全审计与漏洞防护。
+  \newline \href{https://github.com/google/skills/tree/main/skills/cloud/google-cloud-waf-security}{google/cloud/google-cloud-waf-security} — 安全审计与漏洞防护。\\
+\addlinespace
+大模型 & \href{https://github.com/NVIDIA/skills/tree/main/skills/Model-Optimizer/launching-evals}{NVIDIA/Model-Optimizer/launching-evals} — 大语言模型训练、推理或评估。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Evaluator-Launcher/launching-evals}{NVIDIA/NeMo-Evaluator-Launcher/launching-evals} — 大语言模型训练、推理或评估。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Bridge/perf-moe-hardware-configs}{NVIDIA/Megatron-Bridge/perf-moe-hardware-configs} — 大模型训练工程。\\
+\addlinespace
+金融分析 & \href{https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/finance-based-pricing-advisor}{deanpeters/finance-based-pricing-advisor} — 财务分析与商业决策。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/pricing-strategy}{coreyhaines31/pricing-strategy} — 财务分析与商业决策。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-product-strategy/skills/business-model}{phuryn/business-model} — 财务分析与商业决策。\\
+\addlinespace
+教育学习 & \href{https://github.com/santifer/career-ops}{santifer/career-ops} — 面试准备与访谈整理。
+  \newline \href{https://github.com/Paramchoudhary/ResumeSkills}{Paramchoudhary/ResumeSkills} — 简历优化与求职准备。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-product-discovery/skills/interview-script}{phuryn/interview-script} — 面试准备与访谈整理。\\
+\addlinespace
+视频创作 & \href{https://github.com/NVIDIA/skills/tree/main/skills/video-search-and-summarization/vios}{NVIDIA/video-search-and-summarization/vios} — 视频生成、理解或处理。
+  \newline \href{https://github.com/google/skills/tree/main/skills/cloud/agent-platform-skill-registry}{google/cloud/agent-platform-skill-registry} — 智能体工作流与任务协作。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/video-search-and-summarization/alerts}{NVIDIA/video-search-and-summarization/alerts} — 视频生成、理解或处理。\\
+\addlinespace
+科研论文 & \href{https://github.com/deanpeters/Product-Manager-Skills/tree/main/skills/proto-persona}{deanpeters/proto-persona} — 研究调研与资料分析。
+  \newline \href{https://github.com/K-Dense-AI/claude-scientific-skills}{K-Dense-AI/claude-scientific-skills} — 科研资料分析。
+  \newline \href{https://github.com/Orchestra-Research/AI-research-SKILLs}{Orchestra-Research/AI-research-SKILLs} — 科研论文分析。\\
+\addlinespace
+邮件营销 & \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/cold-email}{coreyhaines31/cold-email} — 邮件营销与用户触达。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/email-sequence}{coreyhaines31/email-sequence} — 邮件营销与用户触达。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-execution/skills/outcome-roadmap}{phuryn/outcome-roadmap} — 邮件营销与用户触达。\\
+\addlinespace
+图片生成 & \href{https://github.com/sanjay3290/ai-skills/tree/main/skills/imagen}{sanjay3290/imagen} — 图片生成与编辑。
+  \newline \href{https://github.com/veniceai/skills/tree/main/skills/venice-image-edit}{veniceai/venice-image-edit} — 图片生成与编辑。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Core/bump-base-image}{NVIDIA/Megatron-Core/bump-base-image} — 图片生成与编辑。\\
+\addlinespace
+界面设计 & \href{https://github.com/nextlevelbuilder/ui-ux-pro-max-skill}{nextlevelbuilder/ui-ux-pro-max-skill} — 界面设计与用户体验优化。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/churn-prevention}{coreyhaines31/churn-prevention} — 界面设计与用户体验优化。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-execution/skills/stakeholder-map}{phuryn/stakeholder-map} — 界面设计与用户体验优化。\\
+\addlinespace
+自动工作流 & \href{https://github.com/czlonkowski/n8n-skills/tree/main/skills/n8n-workflow-patterns}{czlonkowski/n8n-workflow-patterns} — 自动化工作流搭建。
+  \newline \href{https://github.com/czlonkowski/n8n-skills/tree/main/skills/n8n-expression-syntax}{czlonkowski/n8n-expression-syntax} — 自动化工作流与工具集成。
+  \newline \href{https://github.com/czlonkowski/n8n-skills/tree/main/skills/n8n-node-configuration}{czlonkowski/n8n-node-configuration} — 自动化工作流与工具集成。\\
+\addlinespace
+写作文案 & \href{https://github.com/NeoLabHQ/context-engineering-kit/tree/master/plugins/docs/skills/write-concisely}{NeoLabHQ/write-concisely} — 写作辅助与文本优化。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/copy-editing}{coreyhaines31/copy-editing} — 写作辅助与文本优化。
+  \newline \href{https://github.com/obra/superpowers/blob/main/skills/writing-plans/SKILL.md}{obra/writing-plans} — 写作辅助与文本优化。\\
+\addlinespace
+电商零售 & \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/product-marketing-context}{coreyhaines31/product-marketing-context} — 产品营销与转化优化。
+  \newline \href{https://github.com/coreyhaines31/marketingskills/tree/main/skills/sales-enablement}{coreyhaines31/sales-enablement} — 销售转化与客户运营。
+  \newline \href{https://github.com/phuryn/pm-skills/tree/main/pm-go-to-market/skills/competitive-battlecard}{phuryn/competitive-battlecard} — 销售转化与客户运营。\\
+\addlinespace
+医疗健康 & \href{https://github.com/zw008/VMware-AIops}{zw008/VMware-AIops} — 健康信息分析与系统监测。
+  \newline \href{https://github.com/huifer/Claude-Ally-Health}{huifer/Claude-Ally-Health} — 健康信息分析与系统监测。
+  \newline \href{https://github.com/foryourhealth111-pixel/Vibe-Skills}{foryourhealth111-pixel/Vibe-Skills} — 健康信息分析与系统监测。\\
+\addlinespace
+语音音频 & \href{https://github.com/blader/humanizer}{blader/humanizer} — 写作辅助与文本优化。
+  \newline \href{https://github.com/veniceai/skills/tree/main/skills/venice-audio-speech}{veniceai/venice-audio-speech} — 音频生成、转录或处理。
+  \newline \href{https://github.com/NVIDIA/skills/tree/main/skills/nemotron-voice-agent/nemotron-voice-agent-deploy}{NVIDIA/nemotron-voice-agent/nemotron-voice-agent-deploy} — 语音合成与语音代理。\\
+\addlinespace
+数据检索 & \href{https://github.com/NVIDIA/skills/tree/main/skills/rag/rag-blueprint}{NVIDIA/rag/rag-blueprint} — 检索增强生成与知识问答。\\
+\bottomrule
+\end{longtable}
+\endgroup
+
+\section{社区 Skill 详细推荐字段说明}
+
+社区 Skill 完整明细表保存在 \path{table06\_community\_skill\_recommendation\_collection.csv} 中。该表包含场景类别、类别内排名、Skill 名称、链接、推荐得分、评级、具体作用、Stars、Forks 和语言等字段。由于完整明细表共有 66 行，且包含较长 URL 和 GitHub 指标，若全部放入正文会导致表格过宽、文字重叠。因此本文正文仅展示摘要和部分详细示例，完整数据以 CSV 文件作为附录数据提供。
+
+\section*{参考文献}
+\addcontentsline{toc}{section}{参考文献}
+\begin{enumerate}[label={[\arabic*]}]
+\item VoltAgent. Awesome Agent Skills. \url{https://github.com/VoltAgent/awesome-agent-skills}
+\item GitHub Docs. REST API documentation. \url{https://docs.github.com/en/rest}
+\item OpenAI. Agents and tool use documentation. \url{https://platform.openai.com/docs}
+\end{enumerate}
+
+\end{document}

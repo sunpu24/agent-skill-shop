@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Skills 数据可视化分析报告</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --paper: #ffffff;
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #e2e8f0;
+      --blue: #2563eb;
+      --purple: #7c3aed;
+      --green: #16a34a;
+      --orange: #f97316;
+      --red: #ef4444;
+      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+      color: var(--ink);
+      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 34%), var(--bg);
+      line-height: 1.7;
+    }
+
+    header {
+      padding: 56px 22px 30px;
+      text-align: center;
+    }
+
+    .paper {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto 48px;
+      padding: 42px;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.94);
+      box-shadow: var(--shadow);
+    }
+
+    .badge {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 7px 14px;
+      border-radius: 999px;
+      background: #eaf2ff;
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 14px;
+    }
+
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(30px, 5vw, 54px);
+      line-height: 1.12;
+      letter-spacing: -0.045em;
+    }
+
+    h2 {
+      margin: 40px 0 14px;
+      padding-top: 16px;
+      border-top: 2px solid #edf2f7;
+      font-size: 26px;
+    }
+
+    h3 { margin: 0 0 12px; font-size: 18px; }
+
+    .subtitle {
+      max-width: 820px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .meta span {
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fff;
+    }
+
+    .abstract {
+      padding: 20px 24px;
+      border-left: 5px solid var(--blue);
+      border-radius: 16px;
+      background: #f8fbff;
+      color: #334155;
+    }
+
+    .kpis {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .kpi, .chart-card, .note, .method-card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: var(--paper);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
+    }
+
+    .kpi { padding: 18px; }
+    .kpi .value { display: block; font-size: 31px; font-weight: 900; color: var(--blue); line-height: 1.2; }
+    .kpi .label { color: var(--muted); font-size: 14px; }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .chart-card { padding: 22px; min-height: 340px; }
+    .chart-title { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 14px; }
+    .chart-title small { color: var(--muted); }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: minmax(128px, 210px) 1fr 52px;
+      gap: 10px;
+      align-items: center;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .bar-label {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      color: #334155;
+    }
+
+    .bar-track {
+      height: 15px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: #eef2f7;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--blue), var(--purple));
+    }
+
+    .bar-value { text-align: right; font-weight: 800; }
+
+    .donut-wrap {
+      display: grid;
+      grid-template-columns: 210px 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .donut {
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      background: conic-gradient(var(--blue) 0deg, var(--blue) 180deg, var(--purple) 180deg, var(--purple) 360deg);
+      position: relative;
+    }
+
+    .donut::after {
+      content: attr(data-center);
+      position: absolute;
+      inset: 42px;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      white-space: pre-line;
+      border-radius: 50%;
+      background: #fff;
+      font-weight: 900;
+      color: var(--ink);
+      box-shadow: inset 0 0 0 1px var(--line);
+    }
+
+    .legend { display: grid; gap: 10px; }
+    .legend-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #334155; }
+    .legend-left { display: inline-flex; align-items: center; gap: 8px; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+
+    .score-model {
+      display: grid;
+      gap: 12px;
+    }
+
+    .method-card { padding: 18px; }
+    .method-card strong { color: var(--blue); }
+
+    .table-wrap {
+      overflow: auto;
+      margin-top: 14px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      position: sticky;
+      top: 0;
+      background: #f8fafc;
+      color: #334155;
+      font-weight: 900;
+      z-index: 1;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    td.num { text-align: right; font-weight: 800; }
+    a { color: var(--blue); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    .note {
+      margin-top: 18px;
+      padding: 18px 20px;
+      color: #475569;
+      background: #fffaf0;
+      border-color: #fed7aa;
+    }
+
+    .caption {
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .loading, .error {
+      padding: 24px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+
+    .error { color: #b91c1c; background: #fff5f5; }
+
+    @media (max-width: 920px) {
+      .paper { padding: 24px; }
+      .kpis, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      .donut-wrap { grid-template-columns: 1fr; justify-items: center; }
+      .bar-row { grid-template-columns: 120px 1fr 44px; }
+    }
+
+    @media print {
+      body { background: #fff; }
+      .paper { width: 100%; box-shadow: none; border: 0; }
+      .chart-card, .kpi, .method-card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <span class="badge">论文式数据可视化报告</span>
+    <h1>AI Agent Skills 生态数据分析与推荐评价</h1>
+    <p class="subtitle">基于预处理后的 Skill 列表、GitHub 仓库指标与自定义评分模型，构建“数据概况—分类结构—推荐质量—代表样本”的可视化分析。</p>
+    <div class="meta" id="meta"></div>
+  </header>
+
+  <main class="paper">
+    <div id="app" class="loading">正在读取 data/visualization_data.json 并生成图表……</div>
+  </main>
+
+  <script>
+    const COLORS = ["#2563eb", "#7c3aed", "#16a34a", "#f97316", "#ef4444", "#0891b2", "#db2777", "#64748b"];
+
+    const fmt = new Intl.NumberFormat("zh-CN");
+
+    function percent(part, total) {
+      return total ? `${(part / total * 100).toFixed(1)}%` : "0.0%";
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>'"]/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
+      }[char]));
+    }
+
+    function barChart(items, labelKey, valueKey, maxItems = 12) {
+      const top = items.slice(0, maxItems);
+      const max = Math.max(...top.map(item => item[valueKey] || 0), 1);
+      return top.map((item, index) => `
+        <div class="bar-row" title="${escapeHtml(item[labelKey])}: ${fmt.format(item[valueKey] || 0)}">
+          <div class="bar-label">${index + 1}. ${escapeHtml(item[labelKey])}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${((item[valueKey] || 0) / max * 100).toFixed(1)}%; background:linear-gradient(90deg, ${COLORS[index % COLORS.length]}, #93c5fd)"></div></div>
+          <div class="bar-value">${fmt.format(item[valueKey] || 0)}</div>
+        </div>
+      `).join("");
+    }
+
+    function donutChart(items, total, centerText) {
+      let current = 0;
+      const stops = items.map((item, index) => {
+        const start = current;
+        current += total ? (item.value / total * 360) : 0;
+        return `${COLORS[index % COLORS.length]} ${start.toFixed(2)}deg ${current.toFixed(2)}deg`;
+      }).join(", ");
+      return `
+        <div class="donut-wrap">
+          <div class="donut" data-center="${escapeHtml(centerText)}" style="background:conic-gradient(${stops || '#e2e8f0 0deg 360deg'});"></div>
+          <div class="legend">
+            ${items.map((item, index) => `
+              <div class="legend-item">
+                <span class="legend-left"><span class="dot" style="background:${COLORS[index % COLORS.length]}"></span>${escapeHtml(item.label)}</span>
+                <strong>${fmt.format(item.value)}（${percent(item.value, total)}）</strong>
+              </div>
+            `).join("")}
+          </div>
+        </div>
+      `;
+    }
+
+    function ratingLevelOrder(name) {
+      return { "夯": 5, "顶级": 4, "人上人": 3, "NPC": 2, "拉完了": 1 }[name] || 0;
+    }
+
+    function render(data) {
+      const overview = data.overview || {};
+      const officialCompanies = data.official_companies || [];
+      const communityCategories = (data.community_categories || []).filter(item => item.count > 0);
+      const enriched = data.enriched_community_skills || [];
+      const ratingDistribution = Object.entries(data.community_rating_distribution || {})
+        .map(([label, value]) => ({ label, value, order: ratingLevelOrder(label) }))
+        .sort((a, b) => b.order - a.order);
+      const avgScore = enriched.length ? enriched.reduce((sum, item) => sum + (item.recommend_score || 0), 0) / enriched.length : 0;
+      const topRecommended = enriched.slice().sort((a, b) => (b.recommend_score || 0) - (a.recommend_score || 0)).slice(0, 15);
+      const languageCounts = enriched.reduce((acc, item) => {
+        const language = item.github_metrics?.language || "未知";
+        acc[language] = (acc[language] || 0) + 1;
+        return acc;
+      }, {});
+      const languageItems = Object.entries(languageCounts)
+        .map(([language, count]) => ({ language, count }))
+        .sort((a, b) => b.count - a.count);
+      const categoryTableRows = communityCategories
+        .slice()
+        .sort((a, b) => b.count - a.count)
+        .map((item, index) => `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${escapeHtml(item.category)}</td>
+            <td class="num">${fmt.format(item.count)}</td>
+            <td class="num">${percent(item.count, overview.community_total)}</td>
+            <td class="num">${fmt.format(item.recommended_count)}</td>
+            <td>${escapeHtml(item.recommended?.[0]?.display_text || "—")}</td>
+          </tr>
+        `).join("");
+
+      document.getElementById("meta").innerHTML = `
+        <span>数据生成时间：${escapeHtml(data.generated_at || "未知")}</span>
+        <span>样本量 N=${fmt.format(overview.total || 0)}</span>
+        <span>社区 Skill=${fmt.format(overview.community_total || 0)}</span>
+      `;
+
+      document.getElementById("app").className = "";
+      document.getElementById("app").innerHTML = `
+        <section>
+          <h2>摘要</h2>
+          <div class="abstract">
+            本研究以 VoltAgent/awesome-agent-skills 生态数据为分析对象，共获得 <strong>${fmt.format(overview.total || 0)}</strong> 条 Skill 记录。
+            数据经来源识别、社区项目 GitHub 指标补全、场景关键词归类和多维度评分后，形成官方供给、社区供给、应用场景分布与推荐质量四类分析结果。
+            从整体看，官方 Skill 占 <strong>${percent(overview.official_total, overview.total)}</strong>，社区 Skill 占 <strong>${percent(overview.community_total, overview.total)}</strong>；
+            社区部分被划分为 <strong>${fmt.format(overview.community_category_count || 0)}</strong> 个应用场景，平均推荐得分为 <strong>${avgScore.toFixed(1)}</strong> 分。
+          </div>
+
+          <div class="kpis">
+            <div class="kpi"><span class="value">${fmt.format(overview.total || 0)}</span><span class="label">总 Skill 数</span></div>
+            <div class="kpi"><span class="value">${fmt.format(overview.official_total || 0)}</span><span class="label">官方 Skill 数</span></div>
+            <div class="kpi"><span class="value">${fmt.format(overview.community_total || 0)}</span><span class="label">社区 Skill 数</span></div>
+            <div class="kpi"><span class="value">${fmt.format(overview.official_company_count || 0)}</span><span class="label">官方机构数</span></div>
+            <div class="kpi"><span class="value">${avgScore.toFixed(1)}</span><span class="label">社区平均推荐分</span></div>
+          </div>
+        </section>
+
+        <section>
+          <h2>一、数据来源与评价方法</h2>
+          <div class="grid-3">
+            <div class="method-card"><h3>1. 数据来源</h3><p>数据来自公开 Skill 列表，并区分 officialskills.sh 官方来源与 GitHub 社区来源。</p></div>
+            <div class="method-card"><h3>2. 场景归类</h3><p>根据名称、描述和原始分类中的关键词，将社区 Skill 映射到安全、科研、营销、开发、RAG 等应用场景。</p></div>
+            <div class="method-card"><h3>3. 推荐评分</h3><p>社区 Skill 采用 100 分制，从场景匹配、GitHub 热度、维护活跃度、文档质量、可信度和功能明确度进行综合评价。</p></div>
+          </div>
+          <div class="chart-card" style="margin-top:18px;">
+            <div class="chart-title"><h3>图 1 推荐评分模型权重</h3><small>总分 100 分</small></div>
+            <div class="score-model">${barChart((data.score_model?.dimensions || []).map(d => ({ name: d.name, points: d.points })), "name", "points", 8)}</div>
+            <p class="caption">说明：该图展示了推荐排序所依据的指标体系，可作为论文“方法设计”部分的图表。</p>
+          </div>
+        </section>
+
+        <section>
+          <h2>二、总体结构分析</h2>
+          <div class="grid-2">
+            <div class="chart-card">
+              <div class="chart-title"><h3>图 2 Skill 来源结构</h3><small>官方 vs 社区</small></div>
+              ${donutChart([
+                { label: "官方 Skill", value: overview.official_total || 0 },
+                { label: "社区 Skill", value: overview.community_total || 0 }
+              ], overview.total || 0, `总量\n${fmt.format(overview.total || 0)}`)}
+            </div>
+            <div class="chart-card">
+              <div class="chart-title"><h3>图 3 官方机构供给 Top 12</h3><small>按 Skill 数排序</small></div>
+              ${barChart(officialCompanies.map(item => ({ company: item.company, count: item.count })), "company", "count", 12)}
+            </div>
+          </div>
+        </section>
+
+        <section>
+          <h2>三、社区 Skill 场景分布</h2>
+          <div class="grid-2">
+            <div class="chart-card">
+              <div class="chart-title"><h3>图 4 社区应用场景 Top 15</h3><small>按数量排序</small></div>
+              ${barChart(communityCategories.slice().sort((a, b) => b.count - a.count).map(item => ({ category: item.category, count: item.count })), "category", "count", 15)}
+            </div>
+            <div class="chart-card">
+              <div class="chart-title"><h3>图 5 社区项目主要语言分布</h3><small>GitHub language 字段</small></div>
+              ${barChart(languageItems, "language", "count", 12)}
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>序号</th><th>场景类别</th><th>数量</th><th>占社区比例</th><th>推荐数</th><th>代表推荐样本</th></tr></thead>
+              <tbody>${categoryTableRows}</tbody>
+            </table>
+          </div>
+          <p class="caption">表 1 社区 Skill 场景分类统计。该表可直接放入论文“结果分析”章节。</p>
+        </section>
+
+        <section>
+          <h2>四、推荐质量与评级分布</h2>
+          <div class="grid-2">
+            <div class="chart-card">
+              <div class="chart-title"><h3>图 6 社区 Skill 推荐评级分布</h3><small>按评分区间映射</small></div>
+              ${donutChart(ratingDistribution, overview.community_total || enriched.length, `评级\n${fmt.format(enriched.length)}`)}
+            </div>
+            <div class="chart-card">
+              <div class="chart-title"><h3>图 7 高分推荐 Skill Top 15</h3><small>综合推荐分</small></div>
+              ${barChart(topRecommended.map(item => ({ name: item.name, score: item.recommend_score })), "name", "score", 15)}
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>排名</th><th>Skill 名称</th><th>场景类别</th><th>评分</th><th>评级</th><th>具体作用</th><th>GitHub Star</th></tr></thead>
+              <tbody>${topRecommended.map((item, index) => `
+                <tr>
+                  <td>${index + 1}</td>
+                  <td><a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.name)}</a></td>
+                  <td>${escapeHtml(item.scenario_category)}</td>
+                  <td class="num">${item.recommend_score}</td>
+                  <td>${escapeHtml(item.rating_stars)} ${escapeHtml(item.rating_name)}</td>
+                  <td>${escapeHtml(item.effect)}</td>
+                  <td class="num">${fmt.format(item.github_metrics?.stars || 0)}</td>
+                </tr>
+              `).join("")}</tbody>
+            </table>
+          </div>
+          <p class="caption">表 2 社区 Skill 综合推荐 Top 15。评级来自多维评分结果，便于解释推荐逻辑。</p>
+        </section>
+
+        <section>
+          <h2>五、讨论与结论</h2>
+          <div class="note">
+            <strong>主要发现：</strong>
+            （1）官方 Skill 供给集中于少数头部机构，说明平台生态存在明显的机构聚集效应；
+            （2）社区 Skill 在开发、自动化、RAG、内容生产和行业应用等场景中形成较丰富分布，反映出 Agent Skill 正从通用工具向垂直任务扩展；
+            （3）推荐评分较高的项目通常同时具备场景描述清晰、GitHub 热度较高、近期维护活跃和文档较完整等特征。
+            因此，后续可以进一步引入下载量、Issue 活跃度、README 语义质量等指标优化评价模型。
+          </div>
+        </section>
+      `;
+    }
+
+    fetch("../data/visualization_data.json")
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.json();
+      })
+      .then(render)
+      .catch(error => {
+        document.getElementById("app").className = "error";
+        document.getElementById("app").innerHTML = `读取数据失败：${escapeHtml(error.message)}。请通过本地服务器打开页面，例如运行 <code>python -m http.server 8000</code> 后访问 <code>http://localhost:8000/public/visualization.html</code>。`;
+      });
+  </script>
+</body>
+</html>

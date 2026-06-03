@@ -1,0 +1,923 @@
+{
+  "title": "AI Agent Skills 分类推荐与数据统计",
+  "description": "数据来源于 VoltAgent/awesome-agent-skills，通过爬取 GitHub README 原始 Markdown 文件并解析得到。",
+  "source": "https://github.com/VoltAgent/awesome-agent-skills",
+  "total": 1114,
+  "category_count": 43,
+  "recommended_total": 106,
+  "updated_at": "2026-06-03T13:52:31.974396",
+  "categories": [
+    {
+      "name": "TypeScript Skills",
+      "count": 440,
+      "recommended": [
+        {
+          "name": "microsoft/azure-ai-contentsafety-ts",
+          "description": "Content safety for text and images",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-contentsafety-ts",
+          "category": "TypeScript Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-document-intelligence-ts",
+          "description": "Document text and table extraction",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-document-intelligence-ts",
+          "category": "TypeScript Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-projects-ts",
+          "description": "AI Foundry project client and agents",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-projects-ts",
+          "category": "TypeScript Skills"
+        }
+      ]
+    },
+    {
+      "name": "Community Skills",
+      "count": 171,
+      "recommended": [
+        {
+          "name": "qdrant/skills",
+          "description": "Agent skills for Qdrant vector search, covering scaling, performance optimization, search quality, monitoring, deployment, model migration, version upgrades, and SDK usage across Python, TypeScript, Rust, Go, .NET, and Java",
+          "link": "https://github.com/qdrant/skills",
+          "category": "Community Skills"
+        },
+        {
+          "name": "BrianRWagner/ai-marketing-skills",
+          "description": "17 marketing frameworks for cold outreach, homepage audit, social cards, and more",
+          "link": "https://github.com/BrianRWagner/ai-marketing-skills",
+          "category": "Community Skills"
+        },
+        {
+          "name": "AgriciDaniel/claude-seo",
+          "description": "Universal SEO skill for comprehensive website analysis and optimization",
+          "link": "https://github.com/AgriciDaniel/claude-seo",
+          "category": "Community Skills"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Typefully",
+      "count": 143,
+      "recommended": [
+        {
+          "name": "typefully/typefully",
+          "description": "Create, schedule, and publish social media content across X, LinkedIn, Threads, Bluesky, and Mastodon",
+          "link": "https://officialskills.sh/typefully/skills/typefully",
+          "category": "Skills by Typefully"
+        },
+        {
+          "name": "veniceai/venice-api-overview",
+          "description": "API basics, auth modes, pricing, and versioning",
+          "link": "https://github.com/veniceai/skills/tree/main/skills/venice-api-overview",
+          "category": "Skills by Typefully"
+        },
+        {
+          "name": "veniceai/venice-auth",
+          "description": "API keys and wallet-based Venice authentication",
+          "link": "https://github.com/veniceai/skills/tree/main/skills/venice-auth",
+          "category": "Skills by Typefully"
+        }
+      ]
+    },
+    {
+      "name": "Python Skills",
+      "count": 40,
+      "recommended": [
+        {
+          "name": "microsoft/agent-framework-azure-ai-py",
+          "description": "Agent Framework for Azure AI Foundry",
+          "link": "https://officialskills.sh/microsoft/skills/agent-framework-azure-ai-py",
+          "category": "Python Skills"
+        },
+        {
+          "name": "microsoft/agents-v2-py",
+          "description": "Foundry Agents SDK — container-based agents with custom images",
+          "link": "https://officialskills.sh/microsoft/skills/agents-v2-py",
+          "category": "Python Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-contentsafety-py",
+          "description": "Harmful content detection",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-contentsafety-py",
+          "category": "Python Skills"
+        }
+      ]
+    },
+    {
+      "name": "Megatron-Bridge",
+      "count": 29,
+      "recommended": [
+        {
+          "name": "NVIDIA/Megatron-Bridge/adding-model-support",
+          "description": "Guide for adding support for new LLM or VLM models in Megatron-Bridge.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Bridge/adding-model-support",
+          "category": "Megatron-Bridge"
+        },
+        {
+          "name": "NVIDIA/Megatron-Bridge/build-and-dependency",
+          "description": "Dev environment setup for Megatron Bridge — container-based development, uv package management, lockfile regeneration, adding dependencies, Slurm container usage, and common build...",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Bridge/build-and-dependency",
+          "category": "Megatron-Bridge"
+        },
+        {
+          "name": "NVIDIA/Megatron-Bridge/bump-dependency",
+          "description": "Bump a pinned dependency (TransformerEngine, Megatron-LM, NRX, etc.), regenerate the lockfile, open a PR, and drive it to green by attaching a watchdog to the \"CICD NeMo\" workflow...",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Bridge/bump-dependency",
+          "category": "Megatron-Bridge"
+        }
+      ]
+    },
+    {
+      "name": "video-search-and-summarization",
+      "count": 29,
+      "recommended": [
+        {
+          "name": "NVIDIA/video-search-and-summarization/alerts",
+          "description": "Manage and monitor VSS alerts after the alerts profile is deployed.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/video-search-and-summarization/alerts",
+          "category": "video-search-and-summarization"
+        },
+        {
+          "name": "NVIDIA/video-search-and-summarization/deploy",
+          "description": "Deploy, debug, or tear down any VSS profile using a compose-centric workflow — config (dry-run) with env overrides, review resolved compose, then compose up.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/video-search-and-summarization/deploy",
+          "category": "video-search-and-summarization"
+        },
+        {
+          "name": "NVIDIA/video-search-and-summarization/report",
+          "description": "Produce video analysis reports by discovering the deployed VSS agent, querying POST /generate for a timestamped captioned summary of the clip, then formatting the agent reply as th...",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/video-search-and-summarization/report",
+          "category": "video-search-and-summarization"
+        }
+      ]
+    },
+    {
+      "name": ".NET Skills",
+      "count": 28,
+      "recommended": [
+        {
+          "name": "microsoft/azure-ai-document-intelligence-dotnet",
+          "description": "Document text, table, and data extraction",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-document-intelligence-dotnet",
+          "category": ".NET Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-openai-dotnet",
+          "description": "GPT-4, embeddings, DALL-E, and Whisper client",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-openai-dotnet",
+          "category": ".NET Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-projects-dotnet",
+          "description": "AI Foundry project management SDK",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-projects-dotnet",
+          "category": ".NET Skills"
+        }
+      ]
+    },
+    {
+      "name": "Java Skills",
+      "count": 25,
+      "recommended": [
+        {
+          "name": "microsoft/azure-ai-anomalydetector-java",
+          "description": "Anomaly detection applications",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-anomalydetector-java",
+          "category": "Java Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-contentsafety-java",
+          "description": "Content moderation and safety",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-contentsafety-java",
+          "category": "Java Skills"
+        },
+        {
+          "name": "microsoft/azure-ai-formrecognizer-java",
+          "description": "Document analysis and form extraction",
+          "link": "https://officialskills.sh/microsoft/skills/azure-ai-formrecognizer-java",
+          "category": "Java Skills"
+        }
+      ]
+    },
+    {
+      "name": "TensorRT-LLM",
+      "count": 25,
+      "recommended": [
+        {
+          "name": "NVIDIA/TensorRT-LLM/ad-accuracy-debug",
+          "description": "> Debug AutoDeploy accuracy regressions vs a reference score (PyTorch backend or published baseline).",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/TensorRT-LLM/ad-accuracy-debug",
+          "category": "TensorRT-LLM"
+        },
+        {
+          "name": "NVIDIA/TensorRT-LLM/ad-add-fusion-transformation",
+          "description": "> Claude Code skill (trtllm-agent-toolkit): implement or extend TensorRT-LLM AutoDeploy fusion transforms under transform/library/ in a TensorRT-LLM checkout.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/TensorRT-LLM/ad-add-fusion-transformation",
+          "category": "TensorRT-LLM"
+        },
+        {
+          "name": "NVIDIA/TensorRT-LLM/ad-conf-check",
+          "description": "> Check whether AutoDeploy YAML configs were actually applied by analyzing server logs and optionally graph dumps (AD_DUMP_GRAPHS_DIR).",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/TensorRT-LLM/ad-conf-check",
+          "category": "TensorRT-LLM"
+        }
+      ]
+    },
+    {
+      "name": "NemoClaw",
+      "count": 23,
+      "recommended": [
+        {
+          "name": "NVIDIA/NemoClaw/nemoclaw-contributor-create-pr",
+          "description": "Create GitHub pull requests that follow the NemoClaw PR template.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NemoClaw/nemoclaw-contributor-create-pr",
+          "category": "NemoClaw"
+        },
+        {
+          "name": "NVIDIA/NemoClaw/nemoclaw-contributor-update-docs",
+          "description": "Scan recent git commits for changes that affect user-facing behavior, then draft or update the corresponding documentation pages and refresh generated user skills for release prep.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NemoClaw/nemoclaw-contributor-update-docs",
+          "category": "NemoClaw"
+        },
+        {
+          "name": "NVIDIA/NemoClaw/nemoclaw-maintainer-cross-issue-sweep",
+          "description": "Scans other open issues to find ones a given PR may also fix or accidentally break.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NemoClaw/nemoclaw-maintainer-cross-issue-sweep",
+          "category": "NemoClaw"
+        }
+      ]
+    },
+    {
+      "name": "Ecosystem Tools",
+      "count": 17,
+      "recommended": [
+        {
+          "name": "anthropics/docx",
+          "description": "Create, edit, and analyze Word documents",
+          "link": "https://officialskills.sh/anthropics/skills/docx",
+          "category": "Ecosystem Tools"
+        },
+        {
+          "name": "anthropics/doc-coauthoring",
+          "description": "Collaborative document editing and co-authoring",
+          "link": "https://officialskills.sh/anthropics/skills/doc-coauthoring",
+          "category": "Ecosystem Tools"
+        },
+        {
+          "name": "anthropics/pptx",
+          "description": "Create, edit, and analyze PowerPoint presentations",
+          "link": "https://officialskills.sh/anthropics/skills/pptx",
+          "category": "Ecosystem Tools"
+        }
+      ]
+    },
+    {
+      "name": "NeMo-RL",
+      "count": 14,
+      "recommended": [
+        {
+          "name": "NVIDIA/NeMo-RL/auto-research",
+          "description": "Autonomous NeMo-RL research agent workflow for directed hypothesis testing and open-ended discovery.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-RL/auto-research",
+          "category": "NeMo-RL"
+        },
+        {
+          "name": "NVIDIA/NeMo-RL/brev-etiquette",
+          "description": "Brev instance operating guidance for NeMo-RL agents working in /home/ubuntu/RL with limited workspace disk, a larger /ephemeral volume, and optional /home/ubuntu/RL/.env secrets.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-RL/brev-etiquette",
+          "category": "NeMo-RL"
+        },
+        {
+          "name": "NVIDIA/NeMo-RL/build-and-dependency",
+          "description": "Build and dependency management for NeMo-RL.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-RL/build-and-dependency",
+          "category": "NeMo-RL"
+        }
+      ]
+    },
+    {
+      "name": "Megatron-Core",
+      "count": 12,
+      "recommended": [
+        {
+          "name": "NVIDIA/Megatron-Core/build-and-dependency",
+          "description": "Container-based dev environment setup and dependency management for Megatron-LM.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Core/build-and-dependency",
+          "category": "Megatron-Core"
+        },
+        {
+          "name": "NVIDIA/Megatron-Core/bump-base-image",
+          "description": "Bump the NVIDIA PyTorch base image (`nvcr.io/nvidia/pytorch:<YY.MM>-py3`) used by Megatron-LM CI.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Core/bump-base-image",
+          "category": "Megatron-Core"
+        },
+        {
+          "name": "NVIDIA/Megatron-Core/cicd",
+          "description": "CI/CD reference for Megatron-LM.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Megatron-Core/cicd",
+          "category": "Megatron-Core"
+        }
+      ]
+    },
+    {
+      "name": "cuopt",
+      "count": 12,
+      "recommended": [
+        {
+          "name": "NVIDIA/cuopt/cuopt-developer",
+          "description": "Modify, build, test, debug, and contribute to NVIDIA cuOpt (C++/CUDA, Python, server, CI).",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/cuopt/cuopt-developer",
+          "category": "cuopt"
+        },
+        {
+          "name": "NVIDIA/cuopt/cuopt-install",
+          "description": "Install cuOpt for Python, C, or as a server (pip, conda, Docker) — system requirements, install commands, and verification.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/cuopt/cuopt-install",
+          "category": "cuopt"
+        },
+        {
+          "name": "NVIDIA/cuopt/cuopt-numerical-optimization-api-c",
+          "description": "LP, MILP, and QP (beta) with cuOpt — C API only.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/cuopt/cuopt-numerical-optimization-api-c",
+          "category": "cuopt"
+        }
+      ]
+    },
+    {
+      "name": "Skills by HashiCorp Team for Terraform",
+      "count": 11,
+      "recommended": [
+        {
+          "name": "hashicorp/azure-verified-modules",
+          "description": "Azure Verified Modules (AVM) certification standards for Terraform modules",
+          "link": "https://officialskills.sh/hashicorp/skills/azure-verified-modules",
+          "category": "Skills by HashiCorp Team for Terraform"
+        },
+        {
+          "name": "hashicorp/new-terraform-provider",
+          "description": "Scaffold a new Terraform provider project using the Plugin Framework",
+          "link": "https://officialskills.sh/hashicorp/skills/new-terraform-provider",
+          "category": "Skills by HashiCorp Team for Terraform"
+        },
+        {
+          "name": "hashicorp/provider-resources",
+          "description": "Implement Terraform Provider resources and data sources using the Plugin Framework",
+          "link": "https://officialskills.sh/hashicorp/skills/provider-resources",
+          "category": "Skills by HashiCorp Team for Terraform"
+        }
+      ]
+    },
+    {
+      "name": "Core Skills",
+      "count": 9,
+      "recommended": [
+        {
+          "name": "microsoft/cloud-solution-architect",
+          "description": "Design well-architected Azure cloud systems",
+          "link": "https://officialskills.sh/microsoft/skills/cloud-solution-architect",
+          "category": "Core Skills"
+        },
+        {
+          "name": "microsoft/continual-learning",
+          "description": "Continual learning patterns for Azure AI",
+          "link": "https://officialskills.sh/microsoft/skills/continual-learning",
+          "category": "Core Skills"
+        },
+        {
+          "name": "microsoft/copilot-sdk",
+          "description": "Build applications powered by GitHub Copilot SDK",
+          "link": "https://officialskills.sh/microsoft/skills/copilot-sdk",
+          "category": "Core Skills"
+        }
+      ]
+    },
+    {
+      "name": "Model-Optimizer",
+      "count": 8,
+      "recommended": [
+        {
+          "name": "NVIDIA/Model-Optimizer/accessing-mlflow",
+          "description": "Query and browse evaluation results stored in MLflow.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Model-Optimizer/accessing-mlflow",
+          "category": "Model-Optimizer"
+        },
+        {
+          "name": "NVIDIA/Model-Optimizer/debug",
+          "description": "Run commands inside a remote Docker container via the file-based command relay (tools/debugger).",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Model-Optimizer/debug",
+          "category": "Model-Optimizer"
+        },
+        {
+          "name": "NVIDIA/Model-Optimizer/deployment",
+          "description": "Serve a quantized or unquantized LLM checkpoint as an OpenAI-compatible API endpoint using vLLM, SGLang, or TRT-LLM.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/Model-Optimizer/deployment",
+          "category": "Model-Optimizer"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Better Auth Team",
+      "count": 7,
+      "recommended": [
+        {
+          "name": "better-auth/best-practices",
+          "description": "Best practices for Better Auth integration",
+          "link": "https://officialskills.sh/better-auth/skills/best-practices",
+          "category": "Skills by Better Auth Team"
+        },
+        {
+          "name": "better-auth/explain-error",
+          "description": "Explain Better Auth error messages",
+          "link": "https://officialskills.sh/better-auth/skills/explain-error",
+          "category": "Skills by Better Auth Team"
+        },
+        {
+          "name": "better-auth/providers",
+          "description": "Better Auth authentication providers",
+          "link": "https://officialskills.sh/better-auth/skills/providers",
+          "category": "Skills by Better Auth Team"
+        }
+      ]
+    },
+    {
+      "name": "Rust Skills",
+      "count": 7,
+      "recommended": [
+        {
+          "name": "microsoft/azure-cosmos-rust",
+          "description": "Cosmos DB NoSQL client",
+          "link": "https://officialskills.sh/microsoft/skills/azure-cosmos-rust",
+          "category": "Rust Skills"
+        },
+        {
+          "name": "microsoft/azure-eventhub-rust",
+          "description": "Event Hubs streaming client",
+          "link": "https://officialskills.sh/microsoft/skills/azure-eventhub-rust",
+          "category": "Rust Skills"
+        },
+        {
+          "name": "microsoft/azure-identity-rust",
+          "description": "Microsoft Entra ID authentication",
+          "link": "https://officialskills.sh/microsoft/skills/azure-identity-rust",
+          "category": "Rust Skills"
+        }
+      ]
+    },
+    {
+      "name": "TileGym",
+      "count": 7,
+      "recommended": [
+        {
+          "name": "NVIDIA/TileGym/adding-cutile-kernel",
+          "description": "Add a new cuTile GPU kernel operator to TileGym.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/TileGym/adding-cutile-kernel",
+          "category": "TileGym"
+        },
+        {
+          "name": "NVIDIA/TileGym/converting-cutile-to-julia",
+          "description": "Converts cuTile Python GPU kernels (@ct.kernel) to cuTile.jl Julia equivalents.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/TileGym/converting-cutile-to-julia",
+          "category": "TileGym"
+        },
+        {
+          "name": "NVIDIA/TileGym/converting-cutile-to-triton",
+          "description": "Converts cuTile GPU kernels (@ct.kernel) to Triton (@triton.jit).",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/TileGym/converting-cutile-to-triton",
+          "category": "TileGym"
+        }
+      ]
+    },
+    {
+      "name": "Skills by ClickHouse",
+      "count": 6,
+      "recommended": [
+        {
+          "name": "clickhouse/clickhouse-best-practices",
+          "description": "Best practices for working with ClickHouse",
+          "link": "https://officialskills.sh/clickhouse/skills/clickhouse-best-practices",
+          "category": "Skills by ClickHouse"
+        },
+        {
+          "name": "clickhouse/chdb-datastore",
+          "description": "Drop-in pandas replacement with ClickHouse performance across 16+ data sources",
+          "link": "https://officialskills.sh/clickhouse/skills/chdb-datastore",
+          "category": "Skills by ClickHouse"
+        },
+        {
+          "name": "clickhouse/chdb-sql",
+          "description": "In-process ClickHouse SQL engine for Python — query files, databases, and cloud storage without a server",
+          "link": "https://officialskills.sh/clickhouse/skills/chdb-sql",
+          "category": "Skills by ClickHouse"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Firecrawl Team",
+      "count": 5,
+      "recommended": [
+        {
+          "name": "firecrawl/firecrawl-build",
+          "description": "Integrate Firecrawl into application code for web search, scraping, extraction, and browser interaction",
+          "link": "https://officialskills.sh/firecrawl/skills/firecrawl-build",
+          "category": "Skills by Firecrawl Team"
+        },
+        {
+          "name": "firecrawl/firecrawl-build-interact",
+          "description": "Multi-step Firecrawl browser flows: clicks, form fills, pagination, and auth-aware navigation",
+          "link": "https://officialskills.sh/firecrawl/skills/firecrawl-build-interact",
+          "category": "Skills by Firecrawl Team"
+        },
+        {
+          "name": "firecrawl/firecrawl-build-onboarding",
+          "description": "Set up Firecrawl credentials and SDK in a project for the first integration",
+          "link": "https://officialskills.sh/firecrawl/skills/firecrawl-build-onboarding",
+          "category": "Skills by Firecrawl Team"
+        }
+      ]
+    },
+    {
+      "name": "NeMo-Gym",
+      "count": 5,
+      "recommended": [
+        {
+          "name": "NVIDIA/NeMo-Gym/add-benchmark",
+          "description": "> Guide for adding a new benchmark or training environment to NeMo-Gym.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Gym/add-benchmark",
+          "category": "NeMo-Gym"
+        },
+        {
+          "name": "NVIDIA/NeMo-Gym/nemo-gym-debugging",
+          "description": ">- Use when debugging a Nemo Gym run or reward profiling job.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Gym/nemo-gym-debugging",
+          "category": "NeMo-Gym"
+        },
+        {
+          "name": "NVIDIA/NeMo-Gym/nemo-gym-docs",
+          "description": "> Maintain the NeMo Gym Fern docs site — add, update, move, or remove pages under fern/.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Gym/nemo-gym-docs",
+          "category": "NeMo-Gym"
+        }
+      ]
+    },
+    {
+      "name": "Skills by VoltAgent",
+      "count": 4,
+      "recommended": [
+        {
+          "name": "voltagent/create-voltagent",
+          "description": "Project setup guide with CLI and manual steps",
+          "link": "https://officialskills.sh/voltagent/skills/create-voltagent",
+          "category": "Skills by VoltAgent"
+        },
+        {
+          "name": "voltagent/voltagent-best-practices",
+          "description": "Architecture and usage patterns for agents, workflows, memory, and servers",
+          "link": "https://officialskills.sh/voltagent/skills/voltagent-best-practices",
+          "category": "Skills by VoltAgent"
+        },
+        {
+          "name": "voltagent/voltagent-core-reference",
+          "description": "Reference for the VoltAgent class options and lifecycle methods",
+          "link": "https://officialskills.sh/voltagent/skills/voltagent-core-reference",
+          "category": "Skills by VoltAgent"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Google Gemini",
+      "count": 4,
+      "recommended": [
+        {
+          "name": "google-gemini/gemini-api-dev",
+          "description": "Best practices for developing Gemini-powered apps using the Gemini API",
+          "link": "https://officialskills.sh/google-gemini/skills/gemini-api-dev",
+          "category": "Skills by Google Gemini"
+        },
+        {
+          "name": "google-gemini/vertex-ai-api-dev",
+          "description": "Developing Gemini-powered apps on Google Cloud Vertex AI using the Gen AI SDK",
+          "link": "https://officialskills.sh/google-gemini/skills/vertex-ai-api-dev",
+          "category": "Skills by Google Gemini"
+        },
+        {
+          "name": "google-gemini/gemini-live-api-dev",
+          "description": "Building real-time bidirectional streaming apps with the Gemini Live API",
+          "link": "https://officialskills.sh/google-gemini/skills/gemini-live-api-dev",
+          "category": "Skills by Google Gemini"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Tinybird Team",
+      "count": 4,
+      "recommended": [
+        {
+          "name": "tinybirdco/tinybird-best-practices",
+          "description": "Tinybird project guidelines for datasources, pipes, endpoints, and SQL",
+          "link": "https://officialskills.sh/tinybirdco/skills/tinybird-best-practices",
+          "category": "Skills by Tinybird Team"
+        },
+        {
+          "name": "tinybirdco/tinybird-cli-guidelines",
+          "description": "Tinybird CLI usage guidelines and commands",
+          "link": "https://officialskills.sh/tinybirdco/skills/tinybird-cli-guidelines",
+          "category": "Skills by Tinybird Team"
+        },
+        {
+          "name": "tinybirdco/tinybird-python-sdk-guidelines",
+          "description": "Tinybird Python SDK usage guidelines",
+          "link": "https://officialskills.sh/tinybirdco/skills/tinybird-python-sdk-guidelines",
+          "category": "Skills by Tinybird Team"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Sanity Team",
+      "count": 4,
+      "recommended": [
+        {
+          "name": "sanity-io/sanity-best-practices",
+          "description": "Best practices for Sanity Studio, GROQ queries, and content workflows",
+          "link": "https://officialskills.sh/sanity-io/skills/sanity-best-practices",
+          "category": "Skills by Sanity Team"
+        },
+        {
+          "name": "sanity-io/content-modeling-best-practices",
+          "description": "Guidelines for designing scalable content models in Sanity",
+          "link": "https://officialskills.sh/sanity-io/skills/content-modeling-best-practices",
+          "category": "Skills by Sanity Team"
+        },
+        {
+          "name": "sanity-io/seo-aeo-best-practices",
+          "description": "SEO and answer engine optimization patterns for content sites",
+          "link": "https://officialskills.sh/sanity-io/skills/seo-aeo-best-practices",
+          "category": "Skills by Sanity Team"
+        }
+      ]
+    },
+    {
+      "name": "Skills by CallStack",
+      "count": 3,
+      "recommended": [
+        {
+          "name": "callstackincubator/react-native-best-practices",
+          "description": "Performance optimization for React Native apps from Callstack",
+          "link": "https://officialskills.sh/callstackincubator/skills/react-native-best-practices",
+          "category": "Skills by CallStack"
+        },
+        {
+          "name": "callstackincubator/github",
+          "description": "GitHub workflow patterns for PRs, code review, branching",
+          "link": "https://officialskills.sh/callstackincubator/skills/github",
+          "category": "Skills by CallStack"
+        },
+        {
+          "name": "callstackincubator/upgrading-react-native",
+          "description": "React Native upgrade workflow: templates, dependencies, and common pitfalls",
+          "link": "https://officialskills.sh/callstackincubator/skills/upgrading-react-native",
+          "category": "Skills by CallStack"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Neon",
+      "count": 3,
+      "recommended": [
+        {
+          "name": "neondatabase/neon-postgres",
+          "description": "Best practices for Neon Serverless Postgres",
+          "link": "https://officialskills.sh/neondatabase/skills/neon-postgres",
+          "category": "Skills by Neon"
+        },
+        {
+          "name": "neondatabase/claimable-postgres",
+          "description": "Claimable Postgres database provisioning with Neon",
+          "link": "https://officialskills.sh/neondatabase/skills/claimable-postgres",
+          "category": "Skills by Neon"
+        },
+        {
+          "name": "neondatabase/neon-postgres-egress-optimizer",
+          "description": "Optimize Neon Postgres egress and data transfer",
+          "link": "https://officialskills.sh/neondatabase/skills/neon-postgres-egress-optimizer",
+          "category": "Skills by Neon"
+        }
+      ]
+    },
+    {
+      "name": "NeMo-Evaluator-Launcher",
+      "count": 3,
+      "recommended": [
+        {
+          "name": "NVIDIA/NeMo-Evaluator-Launcher/accessing-mlflow",
+          "description": "Query and browse evaluation results stored in MLflow.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Evaluator-Launcher/accessing-mlflow",
+          "category": "NeMo-Evaluator-Launcher"
+        },
+        {
+          "name": "NVIDIA/NeMo-Evaluator-Launcher/launching-evals",
+          "description": "Run, monitor, analyze, and debug LLM evaluations via nemo-evaluator-launcher.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Evaluator-Launcher/launching-evals",
+          "category": "NeMo-Evaluator-Launcher"
+        },
+        {
+          "name": "NVIDIA/NeMo-Evaluator-Launcher/nel-assistant",
+          "description": "Interactive config wizard for NeMo Evaluator Launcher (NEL).",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Evaluator-Launcher/nel-assistant",
+          "category": "NeMo-Evaluator-Launcher"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Angular",
+      "count": 2,
+      "recommended": [
+        {
+          "name": "angular/angular-developer",
+          "description": "Generate Angular code and architectural guidance for components, services, reactivity",
+          "link": "https://github.com/angular/skills",
+          "category": "Skills by Angular"
+        },
+        {
+          "name": "angular/angular-new-app",
+          "description": "Create new Angular apps using CLI with modern best practices",
+          "link": "https://github.com/angular/skills",
+          "category": "Skills by Angular"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Stripe Team",
+      "count": 2,
+      "recommended": [
+        {
+          "name": "stripe/stripe-best-practices",
+          "description": "Best practices for building Stripe integrations",
+          "link": "https://officialskills.sh/stripe/skills/stripe-best-practices",
+          "category": "Skills by Stripe Team"
+        },
+        {
+          "name": "stripe/upgrade-stripe",
+          "description": "Upgrade Stripe SDK and API versions",
+          "link": "https://officialskills.sh/stripe/skills/upgrade-stripe",
+          "category": "Skills by Stripe Team"
+        }
+      ]
+    },
+    {
+      "name": "deepstream",
+      "count": 2,
+      "recommended": [
+        {
+          "name": "NVIDIA/deepstream/deepstream-dev",
+          "description": "NVIDIA DeepStream SDK 9.0 development with Python pyservicemaker API.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/deepstream/deepstream-dev",
+          "category": "deepstream"
+        },
+        {
+          "name": "NVIDIA/deepstream/deepstream-import-vision-model",
+          "description": "> Use this skill to bring any vision model from HuggingFace or NVIDIA NGC into an NVIDIA DeepStream pipeline with end-to-end automation: ONNX download, SafeTensors export, TRT engi...",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/deepstream/deepstream-import-vision-model",
+          "category": "deepstream"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Composio Team",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "composiohq/composio",
+          "description": "Connect AI agents to 1000+ external apps with managed authentication",
+          "link": "https://officialskills.sh/composiohq/skills/composio",
+          "category": "Skills by Composio Team"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Supabase Team",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "supabase/postgres-best-practices",
+          "description": "PostgreSQL best practices for Supabase",
+          "link": "https://officialskills.sh/supabase/skills/postgres-best-practices",
+          "category": "Skills by Supabase Team"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Courier",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "trycourier/courier-skills",
+          "description": "Multi-channel notifications via email, SMS, push, and chat",
+          "link": "https://github.com/trycourier/courier-skills",
+          "category": "Skills by Courier"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Remotion",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "remotion-dev/remotion",
+          "description": "Programmatic video creation with React",
+          "link": "https://officialskills.sh/remotion-dev/skills/remotion",
+          "category": "Skills by Remotion"
+        }
+      ]
+    },
+    {
+      "name": "Skills by Replicate",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "replicate/replicate",
+          "description": "Discover, compare, and run AI models using Replicate's API",
+          "link": "https://officialskills.sh/replicate/skills/replicate",
+          "category": "Skills by Replicate"
+        }
+      ]
+    },
+    {
+      "name": "CUDA-Q",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "NVIDIA/CUDA-Q/cudaq-guide",
+          "description": "CUDA-Q onboarding guide for installation, test programs, GPU simulation, QPU hardware, and quantum applications.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/CUDA-Q/cudaq-guide",
+          "category": "CUDA-Q"
+        }
+      ]
+    },
+    {
+      "name": "DALI",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "NVIDIA/DALI/dali-dynamic-mode",
+          "description": "Use when writing DALI data loading or preprocessing code with `nvidia.dali.experimental.dynamic` (ndd), or when converting DALI pipeline-mode code to dynamic mode, or when the user...",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/DALI/dali-dynamic-mode",
+          "category": "DALI"
+        }
+      ]
+    },
+    {
+      "name": "NeMo-Evaluator",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "NVIDIA/NeMo-Evaluator/byob",
+          "description": "Create custom LLM evaluation benchmarks using the BYOB decorator framework.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/NeMo-Evaluator/byob",
+          "category": "NeMo-Evaluator"
+        }
+      ]
+    },
+    {
+      "name": "nemotron-voice-agent",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "NVIDIA/nemotron-voice-agent/nemotron-voice-agent-deploy",
+          "description": "Deploy Nemotron Voice Agent on Workstation (x86), Jetson Thor, or Cloud NIMs.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/nemotron-voice-agent/nemotron-voice-agent-deploy",
+          "category": "nemotron-voice-agent"
+        }
+      ]
+    },
+    {
+      "name": "rag",
+      "count": 1,
+      "recommended": [
+        {
+          "name": "NVIDIA/rag/rag-blueprint",
+          "description": "\"NVIDIA RAG Blueprint — deploy, configure, troubleshoot, and manage.",
+          "link": "https://github.com/NVIDIA/skills/tree/main/skills/rag/rag-blueprint",
+          "category": "rag"
+        }
+      ]
+    }
+  ],
+  "top_domains": [
+    {
+      "domain": "officialskills.sh",
+      "count": 586
+    },
+    {
+      "domain": "github.com",
+      "count": 526
+    },
+    {
+      "domain": "www.notion.so",
+      "count": 1
+    },
+    {
+      "domain": "paulo.com.br",
+      "count": 1
+    }
+  ]
+}
