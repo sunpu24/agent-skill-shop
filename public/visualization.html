@@ -1,522 +1,89 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Agent Skills 数据可视化分析报告</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Agent Skill Galaxy</title>
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --paper: #ffffff;
-      --ink: #172033;
-      --muted: #64748b;
-      --line: #e2e8f0;
-      --blue: #2563eb;
-      --purple: #7c3aed;
-      --green: #16a34a;
-      --orange: #f97316;
-      --red: #ef4444;
-      --shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
-      color: var(--ink);
-      background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.16), transparent 34%), var(--bg);
-      line-height: 1.7;
-    }
-
-    header {
-      padding: 56px 22px 30px;
-      text-align: center;
-    }
-
-    .paper {
-      width: min(1180px, calc(100% - 32px));
-      margin: 0 auto 48px;
-      padding: 42px;
-      border: 1px solid var(--line);
-      border-radius: 24px;
-      background: rgba(255, 255, 255, 0.94);
-      box-shadow: var(--shadow);
-    }
-
-    .badge {
-      display: inline-flex;
-      gap: 8px;
-      align-items: center;
-      padding: 7px 14px;
-      border-radius: 999px;
-      background: #eaf2ff;
-      color: var(--blue);
-      font-weight: 800;
-      font-size: 14px;
-    }
-
-    h1 {
-      margin: 18px 0 12px;
-      font-size: clamp(30px, 5vw, 54px);
-      line-height: 1.12;
-      letter-spacing: -0.045em;
-    }
-
-    h2 {
-      margin: 40px 0 14px;
-      padding-top: 16px;
-      border-top: 2px solid #edf2f7;
-      font-size: 26px;
-    }
-
-    h3 { margin: 0 0 12px; font-size: 18px; }
-
-    .subtitle {
-      max-width: 820px;
-      margin: 0 auto;
-      color: var(--muted);
-      font-size: 17px;
-    }
-
-    .meta {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 22px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .meta span {
-      padding: 6px 10px;
-      border: 1px solid var(--line);
-      border-radius: 10px;
-      background: #fff;
-    }
-
-    .abstract {
-      padding: 20px 24px;
-      border-left: 5px solid var(--blue);
-      border-radius: 16px;
-      background: #f8fbff;
-      color: #334155;
-    }
-
-    .kpis {
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 14px;
-      margin-top: 22px;
-    }
-
-    .kpi, .chart-card, .note, .method-card {
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      background: var(--paper);
-      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.04);
-    }
-
-    .kpi { padding: 18px; }
-    .kpi .value { display: block; font-size: 31px; font-weight: 900; color: var(--blue); line-height: 1.2; }
-    .kpi .label { color: var(--muted); font-size: 14px; }
-
-    .grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      margin-top: 18px;
-    }
-
-    .grid-3 {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 18px;
-      margin-top: 18px;
-    }
-
-    .chart-card { padding: 22px; min-height: 340px; }
-    .chart-title { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; margin-bottom: 14px; }
-    .chart-title small { color: var(--muted); }
-
-    .bar-row {
-      display: grid;
-      grid-template-columns: minmax(128px, 210px) 1fr 52px;
-      gap: 10px;
-      align-items: center;
-      margin: 10px 0;
-      font-size: 14px;
-    }
-
-    .bar-label {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      color: #334155;
-    }
-
-    .bar-track {
-      height: 15px;
-      overflow: hidden;
-      border-radius: 999px;
-      background: #eef2f7;
-    }
-
-    .bar-fill {
-      height: 100%;
-      border-radius: inherit;
-      background: linear-gradient(90deg, var(--blue), var(--purple));
-    }
-
-    .bar-value { text-align: right; font-weight: 800; }
-
-    .donut-wrap {
-      display: grid;
-      grid-template-columns: 210px 1fr;
-      gap: 22px;
-      align-items: center;
-    }
-
-    .donut {
-      width: 210px;
-      height: 210px;
-      border-radius: 50%;
-      background: conic-gradient(var(--blue) 0deg, var(--blue) 180deg, var(--purple) 180deg, var(--purple) 360deg);
-      position: relative;
-    }
-
-    .donut::after {
-      content: attr(data-center);
-      position: absolute;
-      inset: 42px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      white-space: pre-line;
-      border-radius: 50%;
-      background: #fff;
-      font-weight: 900;
-      color: var(--ink);
-      box-shadow: inset 0 0 0 1px var(--line);
-    }
-
-    .legend { display: grid; gap: 10px; }
-    .legend-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #334155; }
-    .legend-left { display: inline-flex; align-items: center; gap: 8px; }
-    .dot { width: 12px; height: 12px; border-radius: 50%; }
-
-    .score-model {
-      display: grid;
-      gap: 12px;
-    }
-
-    .method-card { padding: 18px; }
-    .method-card strong { color: var(--blue); }
-
-    .table-wrap {
-      overflow: auto;
-      margin-top: 14px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-    }
-
-    table {
-      width: 100%;
-      min-width: 820px;
-      border-collapse: collapse;
-      background: #fff;
-    }
-
-    th, td {
-      padding: 12px 14px;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
-      font-size: 14px;
-    }
-
-    th {
-      position: sticky;
-      top: 0;
-      background: #f8fafc;
-      color: #334155;
-      font-weight: 900;
-      z-index: 1;
-    }
-
-    tr:last-child td { border-bottom: 0; }
-    td.num { text-align: right; font-weight: 800; }
-    a { color: var(--blue); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .note {
-      margin-top: 18px;
-      padding: 18px 20px;
-      color: #475569;
-      background: #fffaf0;
-      border-color: #fed7aa;
-    }
-
-    .caption {
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .loading, .error {
-      padding: 24px;
-      border-radius: 18px;
-      background: #fff;
-      border: 1px solid var(--line);
-      text-align: center;
-    }
-
-    .error { color: #b91c1c; background: #fff5f5; }
-
-    @media (max-width: 920px) {
-      .paper { padding: 24px; }
-      .kpis, .grid-2, .grid-3 { grid-template-columns: 1fr; }
-      .donut-wrap { grid-template-columns: 1fr; justify-items: center; }
-      .bar-row { grid-template-columns: 120px 1fr 44px; }
-    }
-
-    @media print {
-      body { background: #fff; }
-      .paper { width: 100%; box-shadow: none; border: 0; }
-      .chart-card, .kpi, .method-card { break-inside: avoid; }
-    }
+    :root{--bg:#050816;--bg2:#0b1020;--card:rgba(15,23,42,.66);--card2:rgba(15,23,42,.9);--line:rgba(148,163,184,.24);--text:#e5f0ff;--muted:#94a3b8;--blue:#38bdf8;--purple:#8b5cf6;--green:#22c55e;--pink:#ec4899;--amber:#f59e0b;--shadow:0 28px 90px rgba(0,0,0,.42)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif;background:radial-gradient(circle at 16% 8%,rgba(56,189,248,.24),transparent 27%),radial-gradient(circle at 84% 16%,rgba(139,92,246,.24),transparent 29%),radial-gradient(circle at 50% 92%,rgba(34,197,94,.12),transparent 31%),linear-gradient(135deg,var(--bg),var(--bg2) 52%,#030712);overflow-x:hidden}body:before{content:"";position:fixed;inset:0;z-index:-3;background-image:linear-gradient(rgba(56,189,248,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(56,189,248,.055) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(circle at center,#000,transparent 82%)}body:after{content:"";position:fixed;inset:0;z-index:-2;background-image:radial-gradient(circle,rgba(229,240,255,.8) 0 1px,transparent 1.4px),radial-gradient(circle,rgba(56,189,248,.62) 0 1px,transparent 1.3px);background-size:120px 120px,190px 190px;background-position:12px 20px,80px 50px;opacity:.28;animation:drift 30s linear infinite}@keyframes drift{to{transform:translate3d(-80px,60px,0)}}
+    .page{width:min(1220px,calc(100% - 34px));margin:0 auto;padding:32px 0 56px}.glass,.card{border:1px solid var(--line);background:linear-gradient(135deg,rgba(15,23,42,.78),rgba(15,23,42,.42));box-shadow:var(--shadow),inset 0 1px 0 rgba(255,255,255,.08);backdrop-filter:blur(18px)}.glass{position:relative;overflow:hidden;border-radius:30px}.glass:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.16),transparent 22%,transparent 78%,rgba(56,189,248,.12))}.hero{display:grid;grid-template-columns:1.08fr .92fr;gap:30px;align-items:center;min-height:540px;padding:clamp(30px,6vw,62px)}.eyebrow{display:inline-flex;align-items:center;gap:10px;padding:9px 14px;border:1px solid rgba(56,189,248,.34);border-radius:999px;background:rgba(56,189,248,.09);color:#bae6fd;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.pulse{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 0 7px rgba(34,197,94,.12),0 0 22px rgba(34,197,94,.8)}h1{margin:24px 0 14px;font-size:clamp(44px,8vw,92px);line-height:.95;letter-spacing:-.075em;background:linear-gradient(100deg,#f8fbff,#7dd3fc 38%,#a78bfa 70%,#f0abfc);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 45px rgba(56,189,248,.18)}.subtitle{max-width:720px;margin:0;color:#cbd5e1;font-size:clamp(16px,2vw,21px);line-height:1.8}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}.chip,.meta-chip{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid rgba(148,163,184,.24);border-radius:999px;background:rgba(15,23,42,.62);color:#dbeafe;font-size:14px;box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+    .hero-visual{min-height:400px;display:grid;place-items:center}.orbit{position:relative;width:min(390px,84vw);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at center,rgba(229,240,255,.95) 0 4%,rgba(56,189,248,.28) 5% 11%,transparent 12%),repeating-radial-gradient(circle,rgba(56,189,248,.22) 0 1px,transparent 1px 34px),conic-gradient(from 210deg,rgba(56,189,248,.08),rgba(139,92,246,.78),rgba(34,197,94,.5),rgba(56,189,248,.08));box-shadow:0 0 70px rgba(56,189,248,.22),inset 0 0 70px rgba(139,92,246,.16);animation:spin 18s linear infinite}.orbit:before,.orbit:after{content:"";position:absolute;inset:13%;border:1px solid rgba(125,211,252,.32);border-radius:50%;transform:rotateX(68deg) rotateZ(-20deg);box-shadow:0 0 28px rgba(56,189,248,.18)}.orbit:after{inset:25%;border-color:rgba(167,139,250,.42);transform:rotateX(58deg) rotateZ(55deg)}@keyframes spin{to{transform:rotate(360deg)}}.satellite{position:absolute;width:16px;height:16px;border-radius:50%;background:var(--blue);box-shadow:0 0 22px var(--blue)}.satellite.one{top:12%;left:63%}.satellite.two{right:13%;bottom:25%;background:var(--green);box-shadow:0 0 22px var(--green)}.satellite.three{left:16%;bottom:18%;background:var(--purple);box-shadow:0 0 22px var(--purple)}
+    .section{margin-top:22px}.section-head{display:flex;justify-content:space-between;align-items:end;gap:18px;margin:36px 0 16px}h2{margin:0;font-size:clamp(24px,3vw,36px);letter-spacing:-.04em}.section-head p{max-width:560px;margin:0;color:var(--muted);line-height:1.7}.kpis{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.card{border-radius:24px;transition:transform .25s,border-color .25s,box-shadow .25s}.card:hover{transform:translateY(-4px);border-color:rgba(56,189,248,.52);box-shadow:0 24px 70px rgba(0,0,0,.35),0 0 34px rgba(56,189,248,.14)}.kpi{position:relative;overflow:hidden;padding:20px}.kpi:after{content:"";position:absolute;right:-34px;top:-34px;width:96px;height:96px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.25),transparent 68%)}.value{display:block;font-size:clamp(28px,4vw,42px);font-weight:950;letter-spacing:-.05em}.label{display:block;margin-top:5px;color:var(--muted);font-size:14px}.signal{width:42px;height:3px;margin-top:16px;border-radius:999px;background:linear-gradient(90deg,var(--blue),var(--purple));box-shadow:0 0 16px rgba(56,189,248,.55)}.grid-2{display:grid;grid-template-columns:.95fr 1.05fr;gap:18px}.grid-2.equal{grid-template-columns:1fr 1fr}.chart-card{min-height:360px;padding:22px}.chart-title{display:flex;justify-content:space-between;gap:12px;align-items:baseline;margin-bottom:20px}.chart-title h3{margin:0;font-size:18px}.chart-title small{color:var(--muted)}
+    .donut-wrap{display:grid;grid-template-columns:230px 1fr;gap:22px;align-items:center}.donut{position:relative;width:230px;height:230px;border-radius:50%;box-shadow:0 0 45px rgba(56,189,248,.16),inset 0 0 28px rgba(255,255,255,.06)}.donut:before{content:"";position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(56,189,248,.2)}.donut:after{content:attr(data-center);position:absolute;inset:48px;display:grid;place-items:center;text-align:center;white-space:pre-line;border-radius:50%;background:rgba(5,8,22,.88);border:1px solid rgba(148,163,184,.22);color:var(--text);font-weight:950;line-height:1.25}.legend{display:grid;gap:12px}.legend-item{display:flex;align-items:center;justify-content:space-between;gap:14px;color:#dbeafe}.legend-left{display:inline-flex;align-items:center;gap:9px;min-width:0}.dot{width:11px;height:11px;border-radius:50%;box-shadow:0 0 14px currentColor;flex:0 0 auto}.legend-item strong{color:#f8fbff}.bar-list{display:grid;gap:12px}.bar-row{display:grid;grid-template-columns:minmax(120px,220px) 1fr 52px;gap:12px;align-items:center;font-size:14px}.bar-label{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;color:#dbeafe}.bar-track{height:14px;overflow:hidden;border-radius:999px;background:rgba(148,163,184,.13);box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}.bar-fill{height:100%;border-radius:inherit;box-shadow:0 0 18px rgba(56,189,248,.35)}.bar-value{text-align:right;color:#f8fbff;font-weight:900}
+    .score-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.score-cell{padding:16px;border-radius:20px;background:rgba(2,6,23,.34);border:1px solid rgba(148,163,184,.16)}.score-top{display:flex;justify-content:space-between;gap:12px;color:#e0f2fe;font-weight:850}.score-points{color:var(--green)}.energy{height:9px;margin-top:14px;border-radius:999px;background:rgba(148,163,184,.13);overflow:hidden}.energy span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--green),var(--blue),var(--purple));box-shadow:0 0 18px rgba(34,197,94,.3)}.score-note{margin:18px 0 0;color:var(--muted);line-height:1.7}.team-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}.search-box{flex:1 1 320px;min-width:220px;display:flex;align-items:center;gap:10px;padding:13px 16px;border:1px solid rgba(56,189,248,.28);border-radius:18px;background:rgba(2,6,23,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}.search-box span{color:#bae6fd}.search-box input{width:100%;border:0;outline:0;background:transparent;color:var(--text);font:inherit}.search-box input::placeholder{color:#64748b}.toggle-group{display:inline-flex;gap:8px;padding:6px;border:1px solid rgba(148,163,184,.2);border-radius:999px;background:rgba(15,23,42,.58)}.toggle-btn{cursor:pointer;border:0;border-radius:999px;padding:9px 14px;background:transparent;color:var(--muted);font-weight:850}.toggle-btn.active{color:#ecfeff;background:linear-gradient(90deg,rgba(56,189,248,.28),rgba(139,92,246,.28));box-shadow:0 0 22px rgba(56,189,248,.14)}.teams-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.team-card{position:relative;overflow:hidden;padding:20px}.team-card:before{content:"";position:absolute;right:-44px;top:-52px;width:132px;height:132px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.23),transparent 70%)}.team-top{position:relative;display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:14px}.team-name{margin:0;font-size:21px;letter-spacing:-.04em;text-transform:capitalize}.team-count{text-align:right;color:#f8fbff;font-weight:950}.team-share{display:block;margin-top:3px;color:var(--muted);font-size:12px;font-weight:700}.team-meter{height:8px;margin:12px 0 16px;overflow:hidden;border-radius:999px;background:rgba(148,163,184,.14)}.team-meter span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--blue),var(--purple),var(--pink));box-shadow:0 0 18px rgba(56,189,248,.3)}.examples{position:relative;display:grid;gap:10px}.example-link{display:block;padding:11px 12px;border:1px solid rgba(148,163,184,.16);border-radius:16px;background:rgba(2,6,23,.32);color:inherit;text-decoration:none;transition:border-color .2s,background .2s,transform .2s}.example-link:hover{transform:translateX(3px);border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.08)}.example-name{display:block;color:#e0f2fe;font-weight:850;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.example-effect{display:block;margin-top:4px;color:var(--muted);font-size:13px;line-height:1.45}.team-empty{grid-column:1/-1;padding:26px;border:1px dashed rgba(148,163,184,.28);border-radius:22px;color:var(--muted);text-align:center;background:rgba(15,23,42,.38)}.category-card{cursor:pointer}.category-card:before{background:radial-gradient(circle,rgba(34,197,94,.2),transparent 70%)}.category-card.active{border-color:rgba(34,197,94,.58);box-shadow:0 24px 70px rgba(0,0,0,.35),0 0 36px rgba(34,197,94,.18)}.category-card .team-meter span{background:linear-gradient(90deg,var(--green),var(--blue),var(--purple));box-shadow:0 0 18px rgba(34,197,94,.3)}.category-name{text-transform:none}.category-badges{position:relative;display:flex;flex-wrap:wrap;gap:8px;margin:-2px 0 14px}.category-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 10px;border:1px solid rgba(56,189,248,.22);border-radius:999px;background:rgba(56,189,248,.08);color:#bae6fd;font-size:12px;font-weight:800}.score-badge{color:#dcfce7;border-color:rgba(34,197,94,.28);background:rgba(34,197,94,.08)}.detail-panel{padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(6,78,59,.34),rgba(15,23,42,.7) 46%,rgba(30,41,59,.42));position:relative;overflow:hidden}.detail-panel:before{content:"";position:absolute;right:-90px;top:-110px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(34,197,94,.2),transparent 68%)}.detail-layout{position:relative;display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}.detail-hero{padding:20px;border:1px solid rgba(34,197,94,.24);border-radius:24px;background:rgba(2,6,23,.34)}.detail-hero h3{margin:10px 0 8px;font-size:clamp(24px,3vw,34px);letter-spacing:-.05em;word-break:break-word}.detail-desc{color:#cbd5e1;line-height:1.7}.detail-score{display:inline-grid;place-items:center;width:118px;height:118px;border-radius:50%;border:1px solid rgba(34,197,94,.34);background:radial-gradient(circle,rgba(34,197,94,.22),rgba(2,6,23,.72));box-shadow:0 0 32px rgba(34,197,94,.18);font-size:34px;font-weight:950}.detail-score small{display:block;font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase}.detail-meta{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px}.metric-grid,.score-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.metric,.score-part{padding:12px;border:1px solid rgba(148,163,184,.16);border-radius:16px;background:rgba(2,6,23,.3)}.metric span,.score-part span{display:block;color:var(--muted);font-size:12px}.metric strong,.score-part strong{display:block;margin-top:4px;color:#f8fbff;font-size:18px}.detail-list{display:grid;gap:12px;margin-top:16px}.skill-row{cursor:pointer;padding:14px;border:1px solid rgba(148,163,184,.16);border-radius:18px;background:rgba(2,6,23,.28);transition:transform .2s,border-color .2s,background .2s}.skill-row:hover,.skill-row.active{transform:translateX(3px);border-color:rgba(34,197,94,.45);background:rgba(34,197,94,.08)}.skill-row-top{display:flex;justify-content:space-between;gap:12px}.skill-row-name{font-weight:900;color:#e0f2fe;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.skill-row-score{color:#dcfce7;font-weight:950}.compare-panel{padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(30,64,175,.32),rgba(15,23,42,.72) 48%,rgba(88,28,135,.26));position:relative;overflow:hidden}.compare-panel:before{content:"";position:absolute;left:-90px;top:-110px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.2),transparent 68%)}.compare-actions{position:relative;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}.compare-pool{position:relative;display:flex;flex-wrap:wrap;gap:10px;margin:14px 0 18px}.compare-chip{cursor:pointer;border:1px solid rgba(148,163,184,.18);border-radius:999px;padding:9px 12px;background:rgba(2,6,23,.34);color:#cbd5e1;font-weight:850;transition:border-color .2s,background .2s,transform .2s}.compare-chip:hover{transform:translateY(-2px);border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.08)}.compare-chip.active{color:#ecfeff;border-color:rgba(56,189,248,.58);background:linear-gradient(90deg,rgba(56,189,248,.22),rgba(139,92,246,.22));box-shadow:0 0 24px rgba(56,189,248,.13)}.compare-table-wrap{position:relative;overflow:auto;border:1px solid rgba(148,163,184,.18);border-radius:22px;background:rgba(2,6,23,.26)}.compare-table{width:100%;min-width:780px;border-collapse:collapse}.compare-table th,.compare-table td{padding:14px;border-bottom:1px solid rgba(148,163,184,.13);vertical-align:top;text-align:left}.compare-table th{color:#bae6fd;background:rgba(15,23,42,.58);font-size:13px;text-transform:uppercase;letter-spacing:.06em}.compare-table td:first-child{width:150px;color:var(--muted);font-weight:900}.compare-skill-name{display:block;color:#f8fbff;font-weight:950;line-height:1.35}.compare-score{color:#dcfce7;font-size:22px;font-weight:950}.compare-dimensions{display:grid;gap:9px;min-width:180px}.compare-dimension-top{display:flex;justify-content:space-between;gap:10px;color:#dbeafe;font-size:12px;font-weight:850}.compare-empty{position:relative;padding:24px;border:1px dashed rgba(148,163,184,.28);border-radius:22px;color:var(--muted);text-align:center;background:rgba(15,23,42,.36)}.insight-panel{padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(88,28,135,.28),rgba(15,23,42,.76) 45%,rgba(8,47,73,.32));position:relative;overflow:hidden}.insight-panel:before{content:"";position:absolute;right:-110px;bottom:-130px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(236,72,153,.18),transparent 68%)}.insight-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}.insight-card{padding:18px;border:1px solid rgba(148,163,184,.16);border-radius:22px;background:rgba(2,6,23,.3)}.insight-card.wide{grid-column:span 2}.insight-card.full{grid-column:1/-1}.insight-kicker{display:block;color:#bae6fd;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase}.insight-value{display:block;margin-top:8px;color:#f8fbff;font-size:clamp(26px,3vw,38px);font-weight:950;letter-spacing:-.05em}.insight-muted{margin:8px 0 0;color:var(--muted);line-height:1.65}.insight-bars{display:grid;gap:10px;margin-top:14px}.insight-bar-top{display:flex;justify-content:space-between;gap:10px;color:#dbeafe;font-size:13px;font-weight:850}.insight-mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.insight-pill{padding:10px 12px;border:1px solid rgba(56,189,248,.2);border-radius:16px;background:rgba(56,189,248,.07);color:#dbeafe}.insight-pill strong{display:block;color:#f8fbff;font-size:18px}.insight-dimensions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:14px}.insight-dimension{padding:12px;border:1px solid rgba(34,197,94,.18);border-radius:18px;background:rgba(34,197,94,.06)}.insight-dimension strong{display:block;color:#dcfce7;font-size:20px}.radar-panel{padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(14,116,144,.3),rgba(15,23,42,.78) 44%,rgba(120,53,15,.25));position:relative;overflow:hidden}.radar-panel:before{content:"";position:absolute;left:-120px;bottom:-130px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,.18),transparent 68%)}.radar-grid{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:14px}.radar-leader{padding:18px;border:1px solid rgba(56,189,248,.22);border-radius:24px;background:rgba(2,6,23,.32)}.radar-list{display:grid;gap:10px}.radar-item{padding:13px;border:1px solid rgba(148,163,184,.16);border-radius:18px;background:rgba(2,6,23,.3)}.radar-item-top{display:flex;justify-content:space-between;gap:12px;align-items:start}.radar-rank{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;font-size:12px;font-weight:950;box-shadow:0 0 18px rgba(56,189,248,.25);flex:0 0 auto}.radar-name{font-weight:950;color:#e0f2fe;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.radar-score{color:#fef3c7;font-weight:950}.radar-meta{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.radar-chip{display:inline-flex;gap:5px;padding:6px 9px;border:1px solid rgba(245,158,11,.22);border-radius:999px;background:rgba(245,158,11,.07);color:#fde68a;font-size:12px;font-weight:800}.radar-mini-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.radar-metric-card{padding:18px;border:1px solid rgba(148,163,184,.16);border-radius:22px;background:rgba(2,6,23,.3)}.radar-spark{display:grid;gap:9px;margin-top:13px}.radar-spark-row{display:grid;grid-template-columns:minmax(0,1fr) 70px;gap:10px;align-items:center}.radar-spark-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#dbeafe;font-size:13px;font-weight:850}.radar-spark-value{text-align:right;color:#f8fbff;font-weight:950}.explorer-panel{padding:24px;border-radius:28px;background:linear-gradient(135deg,rgba(79,70,229,.3),rgba(15,23,42,.78) 46%,rgba(6,95,70,.25));position:relative;overflow:hidden}.explorer-panel:before{content:"";position:absolute;right:-120px;top:-130px;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle,rgba(56,189,248,.18),transparent 68%)}.explorer-controls{position:relative;display:grid;grid-template-columns:1.3fr repeat(3,minmax(135px,1fr));gap:12px;margin-bottom:14px}.explorer-select,.explorer-input{width:100%;border:1px solid rgba(56,189,248,.24);border-radius:16px;background:rgba(2,6,23,.46);color:var(--text);padding:12px 13px;outline:0;font:inherit;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}.explorer-select option{background:#0f172a;color:var(--text)}.explorer-actions{position:relative;display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin:10px 0 18px}.explorer-results{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.explorer-card{display:flex;flex-direction:column;gap:12px;padding:18px;border:1px solid rgba(148,163,184,.17);border-radius:22px;background:rgba(2,6,23,.32);text-decoration:none;color:inherit;transition:transform .2s,border-color .2s,background .2s}.explorer-card:hover{transform:translateY(-3px);border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.08)}.explorer-top{display:flex;justify-content:space-between;gap:12px;align-items:start}.explorer-name{font-size:18px;font-weight:950;color:#f8fbff;line-height:1.35;word-break:break-word}.explorer-score{min-width:58px;text-align:right;color:#dcfce7;font-size:24px;font-weight:950}.explorer-meta{display:flex;flex-wrap:wrap;gap:7px}.explorer-chip{display:inline-flex;gap:5px;padding:6px 9px;border:1px solid rgba(56,189,248,.2);border-radius:999px;background:rgba(56,189,248,.07);color:#bae6fd;font-size:12px;font-weight:800}.explorer-detail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.explorer-mini{padding:9px;border:1px solid rgba(148,163,184,.14);border-radius:13px;background:rgba(15,23,42,.38)}.explorer-mini span{display:block;color:var(--muted);font-size:11px}.explorer-mini strong{display:block;margin-top:2px;color:#f8fbff}.nav-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.portal{min-height:210px;padding:26px;display:flex;flex-direction:column;justify-content:space-between}.portal h3{margin:0 0 10px;font-size:26px;letter-spacing:-.04em}.portal p{margin:0;color:var(--muted);line-height:1.75}.arrow{margin-top:24px;color:#bae6fd;font-weight:900;letter-spacing:.04em}.loading,.error{padding:26px;border:1px solid var(--line);border-radius:24px;background:var(--card2);color:var(--muted);text-align:center}.error{color:#fecaca;border-color:rgba(248,113,113,.42)}code{color:#bae6fd}footer{margin-top:28px;color:var(--muted);text-align:center;font-size:13px}
+    @media(max-width:980px){.hero,.grid-2,.grid-2.equal,.nav-grid,.teams-grid,.detail-layout,.radar-grid,.explorer-controls,.explorer-results{grid-template-columns:1fr}.hero{min-height:auto}.hero-visual{min-height:310px}.kpis,.score-grid,.insight-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.insight-card.wide{grid-column:span 2}.insight-dimensions{grid-template-columns:repeat(3,minmax(0,1fr))}.donut-wrap{grid-template-columns:1fr;justify-items:center}.section-head{align-items:start;flex-direction:column}}@media(max-width:620px){.page{width:min(100% - 22px,1220px);padding-top:16px}.hero,.chart-card,.portal,.detail-panel,.insight-panel,.radar-panel,.explorer-panel{padding:20px;border-radius:22px}.kpis,.score-grid,.metric-grid,.score-detail-grid,.insight-grid,.insight-mini-grid,.insight-dimensions,.radar-mini-grid,.explorer-detail-grid{grid-template-columns:1fr}.insight-card.wide{grid-column:auto}.bar-row{grid-template-columns:1fr 1fr 44px;gap:8px}.bar-label{grid-column:1/-1}.donut{width:205px;height:205px}.donut:after{inset:42px}.team-toolbar{align-items:stretch}.toggle-group{width:100%;justify-content:center}.toggle-btn{flex:1}}
   </style>
 </head>
 <body>
-  <header>
-    <span class="badge">论文式数据可视化报告</span>
-    <h1>AI Agent Skills 生态数据分析与推荐评价</h1>
-    <p class="subtitle">基于预处理后的 Skill 列表、GitHub 仓库指标与自定义评分模型，构建“数据概况—分类结构—推荐质量—代表样本”的可视化分析。</p>
-    <div class="meta" id="meta"></div>
-  </header>
-
-  <main class="paper">
-    <div id="app" class="loading">正在读取 data/visualization_data.json 并生成图表……</div>
-  </main>
-
+  <div class="page">
+    <header class="hero glass">
+      <div>
+        <span class="eyebrow"><span class="pulse"></span> Agent Skill Intelligence Dashboard</span>
+        <h1>Agent Skill Galaxy</h1>
+        <p class="subtitle">AI Agent Skill 推荐中心 / Discover high-value Agent Skills from official teams and community projects</p>
+        <div class="hero-actions" id="meta"><span class="meta-chip">正在同步星图数据……</span></div>
+      </div>
+      <div class="hero-visual" aria-hidden="true"><div class="orbit"><span class="satellite one"></span><span class="satellite two"></span><span class="satellite three"></span></div></div>
+    </header>
+    <main id="app" class="section loading">正在读取 data/visualization_data.json 并生成 Agent Skill Galaxy 首页……</main>
+    <footer>Agent Skill Galaxy · Static Visualization Homepage · HTML/CSS/Vanilla JS</footer>
+  </div>
   <script>
-    const COLORS = ["#2563eb", "#7c3aed", "#16a34a", "#f97316", "#ef4444", "#0891b2", "#db2777", "#64748b"];
-
-    const fmt = new Intl.NumberFormat("zh-CN");
-
-    function percent(part, total) {
-      return total ? `${(part / total * 100).toFixed(1)}%` : "0.0%";
-    }
-
-    function escapeHtml(value) {
-      return String(value ?? "").replace(/[&<>'"]/g, char => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
-      }[char]));
-    }
-
-    function barChart(items, labelKey, valueKey, maxItems = 12) {
-      const top = items.slice(0, maxItems);
-      const max = Math.max(...top.map(item => item[valueKey] || 0), 1);
-      return top.map((item, index) => `
-        <div class="bar-row" title="${escapeHtml(item[labelKey])}: ${fmt.format(item[valueKey] || 0)}">
-          <div class="bar-label">${index + 1}. ${escapeHtml(item[labelKey])}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${((item[valueKey] || 0) / max * 100).toFixed(1)}%; background:linear-gradient(90deg, ${COLORS[index % COLORS.length]}, #93c5fd)"></div></div>
-          <div class="bar-value">${fmt.format(item[valueKey] || 0)}</div>
-        </div>
-      `).join("");
-    }
-
-    function donutChart(items, total, centerText) {
-      let current = 0;
-      const stops = items.map((item, index) => {
-        const start = current;
-        current += total ? (item.value / total * 360) : 0;
-        return `${COLORS[index % COLORS.length]} ${start.toFixed(2)}deg ${current.toFixed(2)}deg`;
-      }).join(", ");
-      return `
-        <div class="donut-wrap">
-          <div class="donut" data-center="${escapeHtml(centerText)}" style="background:conic-gradient(${stops || '#e2e8f0 0deg 360deg'});"></div>
-          <div class="legend">
-            ${items.map((item, index) => `
-              <div class="legend-item">
-                <span class="legend-left"><span class="dot" style="background:${COLORS[index % COLORS.length]}"></span>${escapeHtml(item.label)}</span>
-                <strong>${fmt.format(item.value)}（${percent(item.value, total)}）</strong>
-              </div>
-            `).join("")}
-          </div>
-        </div>
-      `;
-    }
-
-    function ratingLevelOrder(name) {
-      return { "夯": 5, "顶级": 4, "人上人": 3, "NPC": 2, "拉完了": 1 }[name] || 0;
-    }
-
-    function render(data) {
-      const overview = data.overview || {};
-      const officialCompanies = data.official_companies || [];
-      const communityCategories = (data.community_categories || []).filter(item => item.count > 0);
-      const enriched = data.enriched_community_skills || [];
-      const ratingDistribution = Object.entries(data.community_rating_distribution || {})
-        .map(([label, value]) => ({ label, value, order: ratingLevelOrder(label) }))
-        .sort((a, b) => b.order - a.order);
-      const avgScore = enriched.length ? enriched.reduce((sum, item) => sum + (item.recommend_score || 0), 0) / enriched.length : 0;
-      const topRecommended = enriched.slice().sort((a, b) => (b.recommend_score || 0) - (a.recommend_score || 0)).slice(0, 15);
-      const languageCounts = enriched.reduce((acc, item) => {
-        const language = item.github_metrics?.language || "未知";
-        acc[language] = (acc[language] || 0) + 1;
-        return acc;
-      }, {});
-      const languageItems = Object.entries(languageCounts)
-        .map(([language, count]) => ({ language, count }))
-        .sort((a, b) => b.count - a.count);
-      const categoryTableRows = communityCategories
-        .slice()
-        .sort((a, b) => b.count - a.count)
-        .map((item, index) => `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${escapeHtml(item.category)}</td>
-            <td class="num">${fmt.format(item.count)}</td>
-            <td class="num">${percent(item.count, overview.community_total)}</td>
-            <td class="num">${fmt.format(item.recommended_count)}</td>
-            <td>${escapeHtml(item.recommended?.[0]?.display_text || "—")}</td>
-          </tr>
-        `).join("");
-
-      document.getElementById("meta").innerHTML = `
-        <span>数据生成时间：${escapeHtml(data.generated_at || "未知")}</span>
-        <span>样本量 N=${fmt.format(overview.total || 0)}</span>
-        <span>社区 Skill=${fmt.format(overview.community_total || 0)}</span>
-      `;
-
-      document.getElementById("app").className = "";
-      document.getElementById("app").innerHTML = `
-        <section>
-          <h2>摘要</h2>
-          <div class="abstract">
-            本研究以 VoltAgent/awesome-agent-skills 生态数据为分析对象，共获得 <strong>${fmt.format(overview.total || 0)}</strong> 条 Skill 记录。
-            数据经来源识别、社区项目 GitHub 指标补全、场景关键词归类和多维度评分后，形成官方供给、社区供给、应用场景分布与推荐质量四类分析结果。
-            从整体看，官方 Skill 占 <strong>${percent(overview.official_total, overview.total)}</strong>，社区 Skill 占 <strong>${percent(overview.community_total, overview.total)}</strong>；
-            社区部分被划分为 <strong>${fmt.format(overview.community_category_count || 0)}</strong> 个应用场景，平均推荐得分为 <strong>${avgScore.toFixed(1)}</strong> 分。
-          </div>
-
-          <div class="kpis">
-            <div class="kpi"><span class="value">${fmt.format(overview.total || 0)}</span><span class="label">总 Skill 数</span></div>
-            <div class="kpi"><span class="value">${fmt.format(overview.official_total || 0)}</span><span class="label">官方 Skill 数</span></div>
-            <div class="kpi"><span class="value">${fmt.format(overview.community_total || 0)}</span><span class="label">社区 Skill 数</span></div>
-            <div class="kpi"><span class="value">${fmt.format(overview.official_company_count || 0)}</span><span class="label">官方机构数</span></div>
-            <div class="kpi"><span class="value">${avgScore.toFixed(1)}</span><span class="label">社区平均推荐分</span></div>
-          </div>
-        </section>
-
-        <section>
-          <h2>一、数据来源与评价方法</h2>
-          <div class="grid-3">
-            <div class="method-card"><h3>1. 数据来源</h3><p>数据来自公开 Skill 列表，并区分 officialskills.sh 官方来源与 GitHub 社区来源。</p></div>
-            <div class="method-card"><h3>2. 场景归类</h3><p>根据名称、描述和原始分类中的关键词，将社区 Skill 映射到安全、科研、营销、开发、RAG 等应用场景。</p></div>
-            <div class="method-card"><h3>3. 推荐评分</h3><p>社区 Skill 采用 100 分制，从场景匹配、GitHub 热度、维护活跃度、文档质量、可信度和功能明确度进行综合评价。</p></div>
-          </div>
-          <div class="chart-card" style="margin-top:18px;">
-            <div class="chart-title"><h3>图 1 推荐评分模型权重</h3><small>总分 100 分</small></div>
-            <div class="score-model">${barChart((data.score_model?.dimensions || []).map(d => ({ name: d.name, points: d.points })), "name", "points", 8)}</div>
-            <p class="caption">说明：该图展示了推荐排序所依据的指标体系，可作为论文“方法设计”部分的图表。</p>
-          </div>
-        </section>
-
-        <section>
-          <h2>二、总体结构分析</h2>
-          <div class="grid-2">
-            <div class="chart-card">
-              <div class="chart-title"><h3>图 2 Skill 来源结构</h3><small>官方 vs 社区</small></div>
-              ${donutChart([
-                { label: "官方 Skill", value: overview.official_total || 0 },
-                { label: "社区 Skill", value: overview.community_total || 0 }
-              ], overview.total || 0, `总量\n${fmt.format(overview.total || 0)}`)}
-            </div>
-            <div class="chart-card">
-              <div class="chart-title"><h3>图 3 官方机构供给 Top 12</h3><small>按 Skill 数排序</small></div>
-              ${barChart(officialCompanies.map(item => ({ company: item.company, count: item.count })), "company", "count", 12)}
-            </div>
-          </div>
-        </section>
-
-        <section>
-          <h2>三、社区 Skill 场景分布</h2>
-          <div class="grid-2">
-            <div class="chart-card">
-              <div class="chart-title"><h3>图 4 社区应用场景 Top 15</h3><small>按数量排序</small></div>
-              ${barChart(communityCategories.slice().sort((a, b) => b.count - a.count).map(item => ({ category: item.category, count: item.count })), "category", "count", 15)}
-            </div>
-            <div class="chart-card">
-              <div class="chart-title"><h3>图 5 社区项目主要语言分布</h3><small>GitHub language 字段</small></div>
-              ${barChart(languageItems, "language", "count", 12)}
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>序号</th><th>场景类别</th><th>数量</th><th>占社区比例</th><th>推荐数</th><th>代表推荐样本</th></tr></thead>
-              <tbody>${categoryTableRows}</tbody>
-            </table>
-          </div>
-          <p class="caption">表 1 社区 Skill 场景分类统计。该表可直接放入论文“结果分析”章节。</p>
-        </section>
-
-        <section>
-          <h2>四、推荐质量与评级分布</h2>
-          <div class="grid-2">
-            <div class="chart-card">
-              <div class="chart-title"><h3>图 6 社区 Skill 推荐评级分布</h3><small>按评分区间映射</small></div>
-              ${donutChart(ratingDistribution, overview.community_total || enriched.length, `评级\n${fmt.format(enriched.length)}`)}
-            </div>
-            <div class="chart-card">
-              <div class="chart-title"><h3>图 7 高分推荐 Skill Top 15</h3><small>综合推荐分</small></div>
-              ${barChart(topRecommended.map(item => ({ name: item.name, score: item.recommend_score })), "name", "score", 15)}
-            </div>
-          </div>
-          <div class="table-wrap">
-            <table>
-              <thead><tr><th>排名</th><th>Skill 名称</th><th>场景类别</th><th>评分</th><th>评级</th><th>具体作用</th><th>GitHub Star</th></tr></thead>
-              <tbody>${topRecommended.map((item, index) => `
-                <tr>
-                  <td>${index + 1}</td>
-                  <td><a href="${escapeHtml(item.link)}" target="_blank" rel="noreferrer">${escapeHtml(item.name)}</a></td>
-                  <td>${escapeHtml(item.scenario_category)}</td>
-                  <td class="num">${item.recommend_score}</td>
-                  <td>${escapeHtml(item.rating_stars)} ${escapeHtml(item.rating_name)}</td>
-                  <td>${escapeHtml(item.effect)}</td>
-                  <td class="num">${fmt.format(item.github_metrics?.stars || 0)}</td>
-                </tr>
-              `).join("")}</tbody>
-            </table>
-          </div>
-          <p class="caption">表 2 社区 Skill 综合推荐 Top 15。评级来自多维评分结果，便于解释推荐逻辑。</p>
-        </section>
-
-        <section>
-          <h2>五、讨论与结论</h2>
-          <div class="note">
-            <strong>主要发现：</strong>
-            （1）官方 Skill 供给集中于少数头部机构，说明平台生态存在明显的机构聚集效应；
-            （2）社区 Skill 在开发、自动化、RAG、内容生产和行业应用等场景中形成较丰富分布，反映出 Agent Skill 正从通用工具向垂直任务扩展；
-            （3）推荐评分较高的项目通常同时具备场景描述清晰、GitHub 热度较高、近期维护活跃和文档较完整等特征。
-            因此，后续可以进一步引入下载量、Issue 活跃度、README 语义质量等指标优化评价模型。
-          </div>
-        </section>
-      `;
-    }
-
-    fetch("../data/visualization_data.json")
-      .then(response => {
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        return response.json();
-      })
-      .then(render)
-      .catch(error => {
-        document.getElementById("app").className = "error";
-        document.getElementById("app").innerHTML = `读取数据失败：${escapeHtml(error.message)}。请通过本地服务器打开页面，例如运行 <code>python -m http.server 8000</code> 后访问 <code>http://localhost:8000/public/visualization.html</code>。`;
-      });
+    const COLORS=["#38bdf8","#8b5cf6","#22c55e","#ec4899","#f59e0b","#06b6d4","#a78bfa","#14b8a6","#f97316","#e879f9"];
+    const EXCLUDED_CATEGORY="其他 / 暂未明确";
+    const fmt=new Intl.NumberFormat("zh-CN");
+    function percent(part,total){return total?`${(part/total*100).toFixed(1)}%`:"0.0%"}
+    function escapeHtml(value){return String(value??"").replace(/[&<>'"]/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]))}
+    function barChart(items,labelKey,valueKey,maxItems=10){const top=items.slice(0,maxItems);const max=Math.max(...top.map(item=>item[valueKey]||0),1);return `<div class="bar-list">${top.map((item,index)=>{const color=COLORS[index%COLORS.length];const width=((item[valueKey]||0)/max*100).toFixed(1);return `<div class="bar-row" title="${escapeHtml(item[labelKey])}: ${fmt.format(item[valueKey]||0)}"><div class="bar-label">${String(index+1).padStart(2,"0")} · ${escapeHtml(item[labelKey])}</div><div class="bar-track"><div class="bar-fill" style="width:${width}%; background:linear-gradient(90deg, ${color}, rgba(229,240,255,.88));"></div></div><div class="bar-value">${fmt.format(item[valueKey]||0)}</div></div>`}).join("")}</div>`}
+    function donutChart(items,total,centerText){let current=0;const stops=items.map((item,index)=>{const start=current;current+=total?(item.value/total*360):0;return `${COLORS[index%COLORS.length]} ${start.toFixed(2)}deg ${current.toFixed(2)}deg`}).join(", ");return `<div class="donut-wrap"><div class="donut" data-center="${escapeHtml(centerText)}" style="background:conic-gradient(${stops||'rgba(148,163,184,.3) 0deg 360deg'});"></div><div class="legend">${items.map((item,index)=>`<div class="legend-item"><span class="legend-left"><span class="dot" style="background:${COLORS[index%COLORS.length]}; color:${COLORS[index%COLORS.length]}"></span>${escapeHtml(item.label)}</span><strong>${fmt.format(item.value)} · ${percent(item.value,total)}</strong></div>`).join("")}</div></div>`}
+    function scoreModel(dimensions,total=100){return `<div class="score-grid">${dimensions.map(item=>`<div class="score-cell"><div class="score-top"><span>${escapeHtml(item.name)}</span><span class="score-points">${fmt.format(item.points||0)} pts</span></div><div class="energy"><span style="width:${Math.min(100,((item.points||0)/total*100)).toFixed(1)}%"></span></div></div>`).join("")}</div>`}
+    function officialTeamCard(team,officialTotal){const examples=(team.examples||[]).slice(0,4);const share=percent(team.count||0,officialTotal);const width=Math.min(100,officialTotal?((team.count||0)/officialTotal*100):0).toFixed(1);return `<article class="team-card card" data-team="${escapeHtml((team.company||"").toLowerCase())}"><div class="team-top"><div><h3 class="team-name">${escapeHtml(team.company||"unknown")}</h3><span class="team-share">占官方 Skills ${share}</span></div><div class="team-count">${fmt.format(team.count||0)}<span class="team-share">Skills</span></div></div><div class="team-meter" aria-label="${escapeHtml(team.company)} 占官方 Skill 比例 ${share}"><span style="width:${width}%"></span></div><div class="examples">${examples.map(example=>`<a class="example-link" href="${escapeHtml(example.link||"#")}" target="_blank" rel="noopener noreferrer"><span class="example-name">${escapeHtml(example.name||"Unnamed Skill")}</span><span class="example-effect">${escapeHtml(example.effect||"暂无效果说明")}</span></a>`).join("")||`<div class="example-link"><span class="example-name">暂无代表样本</span><span class="example-effect">等待数据补充</span></div>`}</div></article>`}
+    function renderOfficialTeams(companies,officialTotal,mode="top",query=""){const normalized=query.trim().toLowerCase();const filtered=companies.filter(team=>{const haystack=[team.company,...(team.examples||[]).flatMap(example=>[example.name,example.effect])].join(" ").toLowerCase();return !normalized||haystack.includes(normalized)});const visible=mode==="all"?filtered:filtered.slice(0,12);const grid=document.getElementById("officialTeamsGrid");const summary=document.getElementById("officialTeamsSummary");if(!grid||!summary)return;summary.textContent=`${normalized?`搜索匹配 ${fmt.format(filtered.length)} 个团队`:`当前展示 ${fmt.format(visible.length)} / ${fmt.format(companies.length)} 个团队`} · 官方总量 ${fmt.format(officialTotal||0)} Skills`;grid.innerHTML=visible.length?visible.map(team=>officialTeamCard(team,officialTotal)).join(""):`<div class="team-empty">没有找到匹配的官方团队。试试 microsoft、openai、sentry 或 skill 名称。</div>`}
+    function bindOfficialTeams(companies,officialTotal){let mode="top";let query="";const input=document.getElementById("officialTeamSearch");const buttons=[...document.querySelectorAll("[data-team-mode]")];const update=()=>{buttons.forEach(button=>button.classList.toggle("active",button.dataset.teamMode===mode));renderOfficialTeams(companies,officialTotal,mode,query)};input?.addEventListener("input",event=>{query=event.target.value;update()});buttons.forEach(button=>button.addEventListener("click",()=>{mode=button.dataset.teamMode;update()}));update()}
+    function communityCategoryCard(category,communityTotal){const recommended=(category.recommended||[]).slice(0,3);const share=percent(category.count||0,communityTotal);const width=Math.min(100,communityTotal?((category.count||0)/communityTotal*100):0).toFixed(1);const bestScore=Math.max(...recommended.map(item=>item.recommend_score||0),0);return `<article class="team-card category-card card" data-category-name="${escapeHtml(category.category||"")}"><div class="team-top"><div><h3 class="team-name category-name">${escapeHtml(category.category||"未命名分类")}</h3><span class="team-share">占社区 Skills ${share}</span></div><div class="team-count">${fmt.format(category.count||0)}<span class="team-share">Skills</span></div></div><div class="category-badges"><span class="category-badge">推荐样本 ${fmt.format(category.recommended_count||recommended.length||0)}</span>${bestScore?`<span class="category-badge score-badge">最高评分 ${fmt.format(bestScore)}</span>`:""}</div><div class="team-meter" aria-label="${escapeHtml(category.category)} 占社区 Skill 比例 ${share}"><span style="width:${width}%"></span></div><div class="examples">${recommended.map(item=>{const href=item.link||(item.repo?`https://github.com/${item.repo}`:"#");return `<a class="example-link" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer" data-detail-skill="${escapeHtml(item.name||item.repo||item.display_text||"")}"><span class="example-name">${escapeHtml(item.display_text||item.name||item.repo||"Unnamed Skill")}</span><span class="example-effect">${escapeHtml(item.effect||item.description||item.rating_name||"暂无效果说明")}</span></a>`}).join("")||`<div class="example-link"><span class="example-name">暂无代表项目</span><span class="example-effect">等待社区推荐数据补充</span></div>`}</div></article>`}
+    function renderCommunityCategories(categories,communityTotal,mode="top",query=""){const normalized=query.trim().toLowerCase();const filtered=categories.filter(category=>{const haystack=[category.category,...(category.recommended||[]).flatMap(item=>[item.name,item.repo,item.effect,item.description,item.display_text])].join(" ").toLowerCase();return !normalized||haystack.includes(normalized)});const visible=mode==="all"?filtered:filtered.slice(0,12);const grid=document.getElementById("communityCategoriesGrid");const summary=document.getElementById("communityCategoriesSummary");if(!grid||!summary)return;summary.textContent=`${normalized?`搜索匹配 ${fmt.format(filtered.length)} 个分类`:`当前展示 ${fmt.format(visible.length)} / ${fmt.format(categories.length)} 个分类`} · 社区总量 ${fmt.format(communityTotal||0)} Skills · 已过滤「${EXCLUDED_CATEGORY}」`;grid.innerHTML=visible.length?visible.map(category=>communityCategoryCard(category,communityTotal)).join(""):`<div class="team-empty">没有找到匹配的社区分类。试试 网络安全、金融分析、RAG、开发 或项目名称。</div>`}
+    function bindCommunityCategories(categories,communityTotal){let mode="top";let query="";const input=document.getElementById("communityCategorySearch");const buttons=[...document.querySelectorAll("[data-category-mode]")];const update=()=>{buttons.forEach(button=>button.classList.toggle("active",button.dataset.categoryMode===mode));renderCommunityCategories(categories,communityTotal,mode,query)};input?.addEventListener("input",event=>{query=event.target.value;update()});buttons.forEach(button=>button.addEventListener("click",()=>{mode=button.dataset.categoryMode;update()}));update()}
+    function allRecommendedSkills(categories){return categories.flatMap(category=>(category.recommended||[]).map(item=>({...item,category:category.category}))).sort((a,b)=>(b.recommend_score||0)-(a.recommend_score||0))}
+    function formatDate(value){return value?String(value).replace("T"," ").replace("Z",""):"未知"}
+    function metricCell(label,value){return `<div class="metric"><span>${escapeHtml(label)}</span><strong>${escapeHtml(value??"未知")}</strong></div>`}
+    function scorePart(label,value,total){const safe=Number(value||0);const width=Math.min(100,total?(safe/total*100):0).toFixed(1);return `<div class="score-part"><span>${escapeHtml(label)}</span><strong>${fmt.format(safe)}</strong><div class="energy"><span style="width:${width}%"></span></div></div>`}
+    function skillDetailHtml(skill,list){if(!skill)return `<div class="team-empty">暂无可展示的社区推荐详情。</div>`;const metrics=skill.github_metrics||{};const detail=skill.score_detail||{};const href=skill.link||(skill.repo?`https://github.com/${skill.repo}`:"#");return `<div class="detail-layout"><article class="detail-hero"><span class="chip">${escapeHtml(skill.category||skill.scenario_category||"社区推荐")}</span><h3>${escapeHtml(skill.name||skill.repo||"Unnamed Skill")}</h3><p class="detail-desc">${escapeHtml(skill.description||skill.effect||"暂无描述")}</p><div class="detail-meta"><span class="chip">${escapeHtml(skill.rating_stars||"⭐")} ${escapeHtml(skill.rating_name||"未评级")}</span><span class="chip">${escapeHtml(skill.effect||"综合型技能")}</span><a class="chip" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">打开项目 ↗</a></div></article><article class="detail-hero"><div class="chart-title"><h3>Recommendation Signal</h3><small>${escapeHtml(skill.repo||skill.name||"")}</small></div><div style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:16px;"><div class="detail-score"><div>${fmt.format(skill.recommend_score||0)}<small>score</small></div></div><p class="detail-desc" style="margin:0;flex:1 1 220px;">${escapeHtml(skill.display_text||"基于场景匹配、GitHub 热度、维护活跃度、文档质量、可信度与清晰度综合计算。")}</p></div><div class="metric-grid">${metricCell("Stars",fmt.format(metrics.stars||0))}${metricCell("Forks",fmt.format(metrics.forks||0))}${metricCell("Language",metrics.language||"未知")}${metricCell("License",metrics.license||"未知")}${metricCell("README",metrics.readme_length?`${fmt.format(metrics.readme_length)} chars`:"未知")}${metricCell("Updated",formatDate(metrics.updated_at))}</div><div class="score-detail-grid" style="margin-top:12px;">${scorePart("场景匹配",detail.scenario_match,25)}${scorePart("GitHub 热度",detail.github_popularity,20)}${scorePart("维护活跃",detail.maintenance,20)}${scorePart("文档质量",detail.documentation,15)}${scorePart("项目可信",detail.trust,10)}${scorePart("功能明确",detail.clarity,10)}</div></article><div class="detail-hero" style="grid-column:1/-1;"><div class="chart-title"><h3>Top Recommended Community Skills</h3><small>点击切换详情</small></div><div class="detail-list">${list.slice(0,8).map(item=>`<div class="skill-row ${item.name===skill.name?"active":""}" data-detail-row="${escapeHtml(item.name||item.repo||"")}"><div class="skill-row-top"><span class="skill-row-name">${escapeHtml(item.display_text||item.name||item.repo||"Unnamed Skill")}</span><span class="skill-row-score">${fmt.format(item.recommend_score||0)}</span></div><span class="example-effect">${escapeHtml(item.category||item.scenario_category||"")} · ${escapeHtml(item.effect||item.rating_name||"社区推荐")}</span></div>`).join("")}</div></div></div>`}
+    function compareKey(skill){return skill?.repo||skill?.name||skill?.display_text||""}
+    function compareDimension(label,value,total){const safe=Number(value||0);const width=Math.min(100,total?(safe/total*100):0).toFixed(1);return `<div><div class="compare-dimension-top"><span>${escapeHtml(label)}</span><strong>${fmt.format(safe)}</strong></div><div class="energy"><span style="width:${width}%"></span></div></div>`}
+    function compareTableHtml(selected){if(selected.length<2)return `<div class="compare-empty">请至少选择 2 个 Skill 进入横向对比。</div>`;const metricRow=(label,render)=>`<tr><td>${escapeHtml(label)}</td>${selected.map(skill=>`<td>${render(skill)}</td>`).join("")}</tr>`;return `<div class="compare-table-wrap"><table class="compare-table"><thead><tr><th>Metric</th>${selected.map(skill=>`<th><span class="compare-skill-name">${escapeHtml(skill.display_text||skill.name||skill.repo||"Unnamed Skill")}</span><small>${escapeHtml(skill.category||skill.scenario_category||"社区推荐")}</small></th>`).join("")}</tr></thead><tbody>${metricRow("推荐评分",skill=>`<span class="compare-score">${fmt.format(skill.recommend_score||0)}</span>`)}${metricRow("评级",skill=>`${escapeHtml(skill.rating_stars||"⭐")} ${escapeHtml(skill.rating_name||"未评级")}`)}${metricRow("GitHub Stars",skill=>fmt.format(skill.github_metrics?.stars||0))}${metricRow("Forks",skill=>fmt.format(skill.github_metrics?.forks||0))}${metricRow("Language",skill=>escapeHtml(skill.github_metrics?.language||"未知"))}${metricRow("License",skill=>escapeHtml(skill.github_metrics?.license||"未知"))}${metricRow("Updated",skill=>escapeHtml(formatDate(skill.github_metrics?.updated_at)))}${metricRow("Repo / Link",skill=>{const href=skill.link||(skill.repo?`https://github.com/${skill.repo}`:"#");return `<a class="chip" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">${escapeHtml(skill.repo||skill.name||"打开项目")} ↗</a>`})}${metricRow("六维评分",skill=>{const detail=skill.score_detail||{};return `<div class="compare-dimensions">${compareDimension("场景匹配",detail.scenario_match,25)}${compareDimension("GitHub 热度",detail.github_popularity,20)}${compareDimension("维护活跃",detail.maintenance,20)}${compareDimension("文档质量",detail.documentation,15)}${compareDimension("项目可信",detail.trust,10)}${compareDimension("功能明确",detail.clarity,10)}</div>`})}</tbody></table></div>`}
+    function renderSkillCompare(skills,selectedKeys,message=""){const pool=document.getElementById("skillComparePool");const panel=document.getElementById("skillComparePanel");const summary=document.getElementById("skillCompareSummary");if(!pool||!panel||!summary)return;const selected=skills.filter(skill=>selectedKeys.includes(compareKey(skill)));summary.textContent=message||`已选择 ${fmt.format(selected.length)} / 4 个 Skill · 候选池来自全社区 Top Recommended Skills`;pool.innerHTML=skills.slice(0,12).map((skill,index)=>{const key=compareKey(skill);return `<button class="compare-chip ${selectedKeys.includes(key)?"active":""}" type="button" data-compare-key="${escapeHtml(key)}">${String(index+1).padStart(2,"0")} · ${escapeHtml(skill.display_text||skill.name||skill.repo||"Unnamed Skill")} · ${fmt.format(skill.recommend_score||0)}</button>`}).join("");panel.innerHTML=compareTableHtml(selected)}
+    function bindSkillCompare(categories){const skills=allRecommendedSkills(categories);let selectedKeys=skills.slice(0,3).map(compareKey).filter(Boolean);const pool=document.getElementById("skillComparePool");const reset=document.getElementById("skillCompareReset");const paint=message=>renderSkillCompare(skills,selectedKeys,message);pool?.addEventListener("click",event=>{const chip=event.target.closest("[data-compare-key]");if(!chip)return;const key=chip.dataset.compareKey;const exists=selectedKeys.includes(key);if(exists&&selectedKeys.length<=2){paint("至少保留 2 个 Skill 用于对比");return}if(!exists&&selectedKeys.length>=4){paint("最多同时对比 4 个 Skill");return}selectedKeys=exists?selectedKeys.filter(item=>item!==key):[...selectedKeys,key];paint()});reset?.addEventListener("click",()=>{selectedKeys=skills.slice(0,3).map(compareKey).filter(Boolean);paint("已恢复默认 Top 3 推荐 Skill 对比")});paint()}
+    function bindCommunitySkillDetail(categories){const skills=allRecommendedSkills(categories);let selected=skills[0];const panel=document.getElementById("communitySkillDetailPanel");const grid=document.getElementById("communityCategoriesGrid");const paint=()=>{if(panel)panel.innerHTML=skillDetailHtml(selected,skills);document.querySelectorAll(".category-card").forEach(card=>card.classList.toggle("active",card.dataset.categoryName===(selected?.category||selected?.scenario_category))) };paint();grid?.addEventListener("click",event=>{const skillLink=event.target.closest("[data-detail-skill]");const card=event.target.closest(".category-card");if(skillLink){event.preventDefault();selected=skills.find(item=>(item.name||item.repo||item.display_text)===skillLink.dataset.detailSkill)||selected}else if(card){const category=categories.find(item=>item.category===card.dataset.categoryName);selected=(category?.recommended||[])[0]?{...category.recommended[0],category:category.category}:selected}else{return}paint();document.getElementById("community-skill-detail")?.scrollIntoView({behavior:"smooth",block:"start"})});panel?.addEventListener("click",event=>{const row=event.target.closest("[data-detail-row]");if(!row)return;selected=skills.find(item=>(item.name||item.repo||"")===row.dataset.detailRow)||selected;paint()})}
+    function avg(items,getter){const values=items.map(getter).map(Number).filter(Number.isFinite);return values.length?values.reduce((sum,value)=>sum+value,0)/values.length:0}
+    function sumBy(items,getter){return items.reduce((sum,item)=>sum+(Number(getter(item))||0),0)}
+    function countBy(items,getter){return items.reduce((map,item)=>{const key=String(getter(item)||"未知").trim()||"未知";map[key]=(map[key]||0)+1;return map},{})}
+    function topDistribution(items,getter,limit=5){return Object.entries(countBy(items,getter)).map(([label,value])=>({label,value})).sort((a,b)=>b.value-a.value).slice(0,limit)}
+    function insightBars(items,total){const max=Math.max(...items.map(item=>item.value||0),1);return `<div class="insight-bars">${items.map((item,index)=>{const width=((item.value||0)/max*100).toFixed(1);return `<div><div class="insight-bar-top"><span>${escapeHtml(item.label)}</span><strong>${fmt.format(item.value||0)} · ${percent(item.value||0,total||items.reduce((sum,row)=>sum+(row.value||0),0))}</strong></div><div class="energy"><span style="width:${width}%;background:linear-gradient(90deg,${COLORS[index%COLORS.length]},rgba(229,240,255,.86));"></span></div></div>`}).join("")}</div>`}
+    function galaxyInsightHtml(overview,officialCompanies,communityCategories){const skills=allRecommendedSkills(communityCategories);const topSkills=skills.slice(0,24);const officialTop3=sumBy(officialCompanies.slice(0,3),item=>item.count);const officialTop5=sumBy(officialCompanies.slice(0,5),item=>item.count);const communityTop3=sumBy(communityCategories.slice(0,3),item=>item.count);const communityTop5=sumBy(communityCategories.slice(0,5),item=>item.count);const stars=sumBy(skills,item=>item.github_metrics?.stars);const forks=sumBy(skills,item=>item.github_metrics?.forks);const maxStars=Math.max(...skills.map(item=>item.github_metrics?.stars||0),0);const maxForks=Math.max(...skills.map(item=>item.github_metrics?.forks||0),0);const scoreAvg=avg(skills,item=>item.recommend_score);const dimensions=[{label:"场景匹配",key:"scenario_match",total:25},{label:"GitHub 热度",key:"github_popularity",total:20},{label:"维护活跃",key:"maintenance",total:20},{label:"文档质量",key:"documentation",total:15},{label:"项目可信",key:"trust",total:10},{label:"功能明确",key:"clarity",total:10}];return `<section id="galaxy-insight"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Galaxy Insight</span><h2>生态洞察：纯前端统计摘要</h2></div><p>基于现有 <code>visualization_data.json</code> 即时计算官方集中度、社区分布、推荐 Skill 语言/许可证分布、GitHub 热度与 score_detail 六维平均值。</p></div><div class="insight-panel card"><div class="insight-grid"><article class="insight-card"><span class="insight-kicker">Recommended Pool</span><span class="insight-value">${fmt.format(skills.length)}</span><p class="insight-muted">来自社区分类推荐列表的候选 Skill 样本。</p></article><article class="insight-card"><span class="insight-kicker">Average Score</span><span class="insight-value">${scoreAvg.toFixed(1)}</span><p class="insight-muted">全社区推荐 Skill 平均推荐评分。</p></article><article class="insight-card"><span class="insight-kicker">Official Top 3</span><span class="insight-value">${percent(officialTop3,overview.official_total||0)}</span><p class="insight-muted">Top 3 官方团队贡献 ${fmt.format(officialTop3)} 个 Skill；Top 5 为 ${percent(officialTop5,overview.official_total||0)}。</p></article><article class="insight-card"><span class="insight-kicker">Community Top 3</span><span class="insight-value">${percent(communityTop3,overview.community_total||0)}</span><p class="insight-muted">Top 3 社区分类覆盖 ${fmt.format(communityTop3)} 个 Skill；Top 5 为 ${percent(communityTop5,overview.community_total||0)}。</p></article><article class="insight-card wide"><div class="chart-title"><h3>Community Category Top Distribution</h3><small>按社区 Skill 数量</small></div>${insightBars(communityCategories.slice(0,6).map(item=>({label:item.category,value:item.count||0})),overview.community_total||0)}</article><article class="insight-card wide"><div class="chart-title"><h3>Top Recommended Language</h3><small>Top 24 推荐 Skill</small></div>${insightBars(topDistribution(topSkills,item=>item.github_metrics?.language,6),topSkills.length)}</article><article class="insight-card wide"><div class="chart-title"><h3>License Distribution</h3><small>Top 24 推荐 Skill</small></div>${insightBars(topDistribution(topSkills,item=>item.github_metrics?.license,6),topSkills.length)}</article><article class="insight-card wide"><div class="chart-title"><h3>GitHub Stars / Forks Overview</h3><small>推荐 Skill 仓库信号</small></div><div class="insight-mini-grid"><div class="insight-pill">Stars Total<strong>${fmt.format(stars)}</strong></div><div class="insight-pill">Forks Total<strong>${fmt.format(forks)}</strong></div><div class="insight-pill">Avg Stars<strong>${fmt.format(Math.round(avg(skills,item=>item.github_metrics?.stars)))}</strong></div><div class="insight-pill">Max Stars<strong>${fmt.format(maxStars)}</strong></div><div class="insight-pill">Avg Forks<strong>${fmt.format(Math.round(avg(skills,item=>item.github_metrics?.forks)))}</strong></div><div class="insight-pill">Max Forks<strong>${fmt.format(maxForks)}</strong></div></div></article><article class="insight-card full"><div class="chart-title"><h3>Score Detail Averages</h3><small>六维推荐评分均值</small></div><div class="insight-dimensions">${dimensions.map(item=>{const value=avg(skills,skill=>skill.score_detail?.[item.key]);const width=Math.min(100,item.total?value/item.total*100:0).toFixed(1);return `<div class="insight-dimension"><span class="insight-kicker">${escapeHtml(item.label)}</span><strong>${value.toFixed(1)}</strong><div class="energy"><span style="width:${width}%"></span></div></div>`}).join("")}</div><p class="insight-muted">该洞察区仅复用页面已加载数据，不请求后端、不生成新数据、不引入外部依赖。</p></article></div></div></section>`}
+    function daysSince(value){const time=Date.parse(value||"");return Number.isFinite(time)?Math.max(0,(Date.now()-time)/86400000):9999}
+    function trendSkillData(categories){const skills=allRecommendedSkills(categories);const maxStars=Math.max(...skills.map(skill=>skill.github_metrics?.stars||0),1);const maxForks=Math.max(...skills.map(skill=>skill.github_metrics?.forks||0),1);return skills.map(skill=>{const detail=skill.score_detail||{};const metrics=skill.github_metrics||{};const recency=Math.max(0,1-Math.min(daysSince(metrics.updated_at),730)/730)*100;const heat=((metrics.stars||0)/maxStars*70)+((metrics.forks||0)/maxForks*30);const quality=((detail.maintenance||0)/20*32)+((detail.documentation||0)/15*26)+((detail.trust||0)/10*22)+((skill.recommend_score||0)/100*20);const trendIndex=Math.round((skill.recommend_score||0)*.32+heat*.24+recency*.18+(detail.maintenance||0)/20*100*.12+(detail.documentation||0)/15*100*.08+(detail.trust||0)/10*100*.06);return {...skill,trend_index:trendIndex,trend_heat:heat,trend_recency:recency,trend_quality:quality}})}
+    function radarItem(skill,index,scoreLabel="Trend"){const metrics=skill.github_metrics||{};const detail=skill.score_detail||{};const href=skill.link||(skill.repo?`https://github.com/${skill.repo}`:"#");return `<a class="radar-item" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><div class="radar-item-top"><span class="radar-rank">${String(index+1).padStart(2,"0")}</span><div style="min-width:0;flex:1;"><div class="radar-name">${escapeHtml(skill.display_text||skill.name||skill.repo||"Unnamed Skill")}</div><span class="example-effect">${escapeHtml(skill.category||skill.scenario_category||"社区推荐")} · Updated ${escapeHtml(formatDate(metrics.updated_at))}</span></div><strong class="radar-score">${scoreLabel} ${fmt.format(skill.trend_index||skill.recommend_score||0)}</strong></div><div class="radar-meta"><span class="radar-chip">★ ${fmt.format(metrics.stars||0)}</span><span class="radar-chip">⑂ ${fmt.format(metrics.forks||0)}</span><span class="radar-chip">维护 ${fmt.format(detail.maintenance||0)}</span><span class="radar-chip">文档 ${fmt.format(detail.documentation||0)}</span><span class="radar-chip">可信 ${fmt.format(detail.trust||0)}</span></div><div class="energy"><span style="width:${Math.min(100,skill.trend_index||skill.recommend_score||0)}%;background:linear-gradient(90deg,var(--amber),var(--blue),var(--purple));"></span></div></a>`}
+    function radarSpark(title,subtitle,items,valueGetter){const max=Math.max(...items.map(valueGetter),1);return `<article class="radar-metric-card"><div class="chart-title"><h3>${escapeHtml(title)}</h3><small>${escapeHtml(subtitle)}</small></div><div class="radar-spark">${items.slice(0,5).map((item,index)=>{const value=Number(valueGetter(item))||0;const width=(value/max*100).toFixed(1);return `<div><div class="radar-spark-row"><span class="radar-spark-label">${String(index+1).padStart(2,"0")} · ${escapeHtml(item.display_text||item.name||item.repo||"Unnamed Skill")}</span><strong class="radar-spark-value">${fmt.format(Math.round(value))}</strong></div><div class="energy"><span style="width:${width}%;background:linear-gradient(90deg,${COLORS[index%COLORS.length]},rgba(245,158,11,.9));"></span></div></div>`}).join("")}</div></article>`}
+    function trendRadarHtml(communityCategories){const skills=trendSkillData(communityCategories);const trending=skills.slice().sort((a,b)=>(b.trend_index||0)-(a.trend_index||0)).slice(0,8);const hot=skills.slice().sort((a,b)=>((b.github_metrics?.stars||0)+(b.github_metrics?.forks||0)*2)-((a.github_metrics?.stars||0)+(a.github_metrics?.forks||0)*2)).slice(0,5);const maintained=skills.slice().sort((a,b)=>(b.score_detail?.maintenance||0)-(a.score_detail?.maintenance||0)).slice(0,5);const documented=skills.slice().sort((a,b)=>(b.score_detail?.documentation||0)-(a.score_detail?.documentation||0)).slice(0,5);const trusted=skills.slice().sort((a,b)=>(b.score_detail?.trust||0)-(a.score_detail?.trust||0)).slice(0,5);const avgTrend=avg(skills,item=>item.trend_index);const freshCount=skills.filter(item=>daysSince(item.github_metrics?.updated_at)<=180).length;return `<section id="trend-radar"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Trend Radar</span><h2>技能趋势雷达：社区推荐动向</h2></div><p>复用 <code>data.community_categories[*].recommended</code> 已有字段，按推荐评分、Stars/Forks、更新时间、维护、文档和可信度计算纯前端趋势指数。</p></div><div class="radar-panel card"><div class="radar-grid"><article class="radar-leader"><div class="chart-title"><h3>Top Trending Community Skills</h3><small>Trend Index Avg ${avgTrend.toFixed(1)} · 近 180 天更新 ${fmt.format(freshCount)}</small></div><div class="radar-list">${trending.map((skill,index)=>radarItem(skill,index)).join("")||`<div class="team-empty">暂无趋势雷达数据。</div>`}</div></article><div class="radar-mini-grid">${radarSpark("高热度项目","Stars + Forks",hot,item=>(item.github_metrics?.stars||0)+(item.github_metrics?.forks||0)*2)}${radarSpark("高维护项目","score_detail.maintenance",maintained,item=>item.score_detail?.maintenance||0)}${radarSpark("高文档质量项目","score_detail.documentation",documented,item=>item.score_detail?.documentation||0)}${radarSpark("高可信项目","score_detail.trust",trusted,item=>item.score_detail?.trust||0)}</div></div><p class="insight-muted">趋势指数仅用于当前静态页面的探索性排序，不依赖后端任务，也不会修改 <code>visualization_data.json</code>。</p></div></section>`}
+    function uniqueOptions(skills,getter){return [...new Set(skills.map(getter).map(value=>String(value||"未知").trim()||"未知"))].sort((a,b)=>a.localeCompare(b,"zh-CN"))}
+    function optionHtml(items,label){return `<option value="all">${escapeHtml(label)}</option>${items.map(item=>`<option value="${escapeHtml(item)}">${escapeHtml(item)}</option>`).join("")}`}
+    function rangeMatch(value,range){const safe=Number(value)||0;if(range==="all")return true;const [min,max]=range.split("-").map(Number);return safe>=min&&(Number.isFinite(max)?safe<=max:true)}
+    function explorerCard(skill){const metrics=skill.github_metrics||{};const detail=skill.score_detail||{};const href=skill.link||(skill.repo?`https://github.com/${skill.repo}`:"#");return `<a class="explorer-card" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"><div class="explorer-top"><div><div class="explorer-name">${escapeHtml(skill.display_text||skill.name||skill.repo||"Unnamed Skill")}</div><span class="example-effect">${escapeHtml(skill.category||skill.scenario_category||"社区推荐")} · ${escapeHtml(skill.repo||"No repo")}</span></div><strong class="explorer-score">${fmt.format(skill.recommend_score||0)}</strong></div><p class="example-effect">${escapeHtml(skill.description||skill.effect||"暂无描述")}</p><div class="explorer-meta"><span class="explorer-chip">Trend ${fmt.format(skill.trend_index||0)}</span><span class="explorer-chip">★ ${fmt.format(metrics.stars||0)}</span><span class="explorer-chip">⑂ ${fmt.format(metrics.forks||0)}</span><span class="explorer-chip">${escapeHtml(metrics.language||"未知语言")}</span><span class="explorer-chip">${escapeHtml(metrics.license||"未知许可证")}</span><span class="explorer-chip">Updated ${escapeHtml(formatDate(metrics.updated_at))}</span></div><div class="explorer-detail-grid"><div class="explorer-mini"><span>Maintenance</span><strong>${fmt.format(detail.maintenance||0)}</strong></div><div class="explorer-mini"><span>Documentation</span><strong>${fmt.format(detail.documentation||0)}</strong></div><div class="explorer-mini"><span>Trust</span><strong>${fmt.format(detail.trust||0)}</strong></div></div><div class="energy"><span style="width:${Math.min(100,skill.recommend_score||0)}%;background:linear-gradient(90deg,var(--green),var(--blue),var(--purple));"></span></div></a>`}
+    function skillExplorerHtml(communityCategories){const skills=trendSkillData(communityCategories);const categories=uniqueOptions(skills,item=>item.category||item.scenario_category);const languages=uniqueOptions(skills,item=>item.github_metrics?.language);const licenses=uniqueOptions(skills,item=>item.github_metrics?.license);return `<section id="skill-explorer"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Skill Explorer</span><h2>技能探索器：搜索、筛选与排序</h2></div><p>基于 <code>data.community_categories[*].recommended</code> 做纯前端探索，支持关键词、分类、语言、许可证、评分区间、Stars 区间和多指标排序。</p></div><div class="explorer-panel card"><div class="explorer-controls"><input class="explorer-input" id="explorerQuery" type="search" placeholder="搜索 name / repo / display_text / description / effect / category" autocomplete="off" /><select class="explorer-select" id="explorerCategory">${optionHtml(categories,"全部分类")}</select><select class="explorer-select" id="explorerLanguage">${optionHtml(languages,"全部语言")}</select><select class="explorer-select" id="explorerLicense">${optionHtml(licenses,"全部许可证")}</select><select class="explorer-select" id="explorerScore"><option value="all">全部评分</option><option value="90-Infinity">90+</option><option value="80-89">80-89</option><option value="70-79">70-79</option><option value="0-69">70 以下</option></select><select class="explorer-select" id="explorerStars"><option value="all">全部 Stars</option><option value="10000-Infinity">10k+</option><option value="1000-9999">1k-10k</option><option value="100-999">100-999</option><option value="0-99">100 以下</option></select><select class="explorer-select" id="explorerSort"><option value="recommend_score">按推荐评分</option><option value="trend_index">按趋势指数</option><option value="stars">按 Stars</option><option value="forks">按 Forks</option><option value="maintenance">按维护活跃</option><option value="documentation">按文档质量</option><option value="trust">按项目可信</option><option value="updated_at">按更新时间</option></select><select class="explorer-select" id="explorerDirection"><option value="desc">降序 High → Low</option><option value="asc">升序 Low → High</option></select></div><div class="explorer-actions"><p class="score-note" id="explorerSummary" style="margin:0;">正在初始化 Skill Explorer……</p><button class="toggle-btn active" type="button" id="explorerReset">Reset Explorer</button></div><div class="explorer-results" id="explorerResults"></div><p class="insight-muted">Skill Explorer 不依赖后端、不修改数据文件；所有搜索、筛选与排序均在浏览器内完成。</p></div></section>`}
+    function bindSkillExplorer(communityCategories){const skills=trendSkillData(communityCategories);const ids=["explorerQuery","explorerCategory","explorerLanguage","explorerLicense","explorerScore","explorerStars","explorerSort","explorerDirection"];const controls=Object.fromEntries(ids.map(id=>[id,document.getElementById(id)]));const results=document.getElementById("explorerResults");const summary=document.getElementById("explorerSummary");const reset=document.getElementById("explorerReset");const sortValue=skill=>({recommend_score:skill.recommend_score||0,trend_index:skill.trend_index||0,stars:skill.github_metrics?.stars||0,forks:skill.github_metrics?.forks||0,maintenance:skill.score_detail?.maintenance||0,documentation:skill.score_detail?.documentation||0,trust:skill.score_detail?.trust||0,updated_at:Date.parse(skill.github_metrics?.updated_at||"")||0}[controls.explorerSort?.value||"recommend_score"]||0);const paint=()=>{if(!results||!summary)return;const query=(controls.explorerQuery?.value||"").trim().toLowerCase();let filtered=skills.filter(skill=>{const metrics=skill.github_metrics||{};const haystack=[skill.name,skill.repo,skill.display_text,skill.description,skill.effect,skill.category,skill.scenario_category].join(" ").toLowerCase();return (!query||haystack.includes(query))&&(controls.explorerCategory?.value==="all"||String(skill.category||skill.scenario_category||"未知")===controls.explorerCategory.value)&&(controls.explorerLanguage?.value==="all"||String(metrics.language||"未知")===controls.explorerLanguage.value)&&(controls.explorerLicense?.value==="all"||String(metrics.license||"未知")===controls.explorerLicense.value)&&rangeMatch(skill.recommend_score,controls.explorerScore?.value||"all")&&rangeMatch(metrics.stars,controls.explorerStars?.value||"all")});const direction=controls.explorerDirection?.value==="asc"?1:-1;filtered=filtered.sort((a,b)=>(sortValue(a)-sortValue(b))*direction);summary.textContent=`匹配 ${fmt.format(filtered.length)} / ${fmt.format(skills.length)} 个推荐 Skill · 当前排序：${controls.explorerSort?.selectedOptions?.[0]?.textContent||"推荐评分"}`;results.innerHTML=filtered.length?filtered.slice(0,24).map(explorerCard).join(""):`<div class="team-empty">没有找到匹配的 Skill。请放宽关键词、评分或 Stars 区间。</div>`};ids.forEach(id=>controls[id]?.addEventListener(id==="explorerQuery"?"input":"change",paint));reset?.addEventListener("click",()=>{ids.forEach(id=>{if(controls[id])controls[id].value=id==="explorerSort"?"recommend_score":id==="explorerDirection"?"desc":id==="explorerQuery"?"":"all"});paint()});paint()}
+    function render(data){const overview=data.overview||{};const officialCompanies=(data.official_companies||[]).slice().sort((a,b)=>(b.count||0)-(a.count||0));const communityCategories=(data.community_categories||[]).filter(item=>item.category!==EXCLUDED_CATEGORY&&(item.count||0)>0).sort((a,b)=>(b.count||0)-(a.count||0));const dimensions=data.score_model?.dimensions||[];document.getElementById("meta").innerHTML=`<span class="meta-chip">数据生成时间：${escapeHtml(data.generated_at||"未知")}</span><span class="meta-chip">总样本 N=${fmt.format(overview.total||0)}</span><span class="meta-chip">Galaxy Mode: Online</span><a class="meta-chip" href="#official-teams">Official Teams ↓</a><a class="meta-chip" href="#community-categories">Community Categories ↓</a><a class="meta-chip" href="#galaxy-insight">Galaxy Insight ↓</a><a class="meta-chip" href="#trend-radar">Trend Radar ↓</a><a class="meta-chip" href="#skill-explorer">Skill Explorer ↓</a>`;document.getElementById("app").className="section";document.getElementById("app").innerHTML=`
+      <section><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Core Metrics</span><h2>Skill Galaxy Overview</h2></div><p>从官方团队与社区项目两个来源汇聚 Agent Skill，用可视化仪表盘展示生态规模、供给结构与推荐评分模型。</p></div><div class="kpis"><div class="kpi card"><span class="value">${fmt.format(overview.total||0)}</span><span class="label">总 Skill 数</span><div class="signal"></div></div><div class="kpi card"><span class="value">${fmt.format(overview.official_total||0)}</span><span class="label">官方 Skill 数</span><div class="signal"></div></div><div class="kpi card"><span class="value">${fmt.format(overview.community_total||0)}</span><span class="label">社区 Skill 数</span><div class="signal"></div></div><div class="kpi card"><span class="value">${fmt.format(overview.official_company_count||0)}</span><span class="label">官方团队数</span><div class="signal"></div></div><div class="kpi card"><span class="value">${fmt.format(overview.community_category_count||0)}</span><span class="label">社区分类数</span><div class="signal"></div></div></div></section>
+      <section><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Visualization Matrix</span><h2>Galaxy Data Charts</h2></div><p>首页保留可视化作业属性：来源占比、官方团队 Top 10、社区分类 Top 10 与推荐评分模型一屏呈现。</p></div><div class="grid-2"><div class="chart-card card"><div class="chart-title"><h3>官方 vs 社区占比</h3><small>Donut Ratio</small></div>${donutChart([{label:"官方 Skills",value:overview.official_total||0},{label:"社区 Skills",value:overview.community_total||0}],overview.total||0,`Total\n${fmt.format(overview.total||0)}`)}</div><div class="chart-card card"><div class="chart-title"><h3>官方团队 Top 10</h3><small>official_companies</small></div>${barChart(officialCompanies.map(item=>({company:item.company,count:item.count})),"company","count",10)}</div></div><div class="grid-2 equal" style="margin-top:18px;"><div class="chart-card card"><div class="chart-title"><h3>社区分类 Top 10</h3><small>已过滤：${escapeHtml(EXCLUDED_CATEGORY)}</small></div>${barChart(communityCategories.map(item=>({category:item.category,count:item.count})),"category","count",10)}</div><div class="chart-card card"><div class="chart-title"><h3>推荐评分模型</h3><small>${fmt.format(data.score_model?.total||100)} pts</small></div>${scoreModel(dimensions,data.score_model?.total||100)}<p class="score-note">社区 Skill 推荐评分综合考虑场景匹配度、GitHub 热度、维护活跃度、文档质量、项目可信度与功能明确度，用于识别更值得优先探索的高价值 Skills。</p></div></div></section>
+      <section id="official-teams"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Official Teams Module</span><h2>官方 Skills：按团队展示</h2></div><p>使用 <code>data.official_companies</code> 动态生成官方团队矩阵，按团队展示 Skill 数量、官方占比和代表 examples。</p></div><div class="team-toolbar"><label class="search-box"><span>⌕</span><input id="officialTeamSearch" type="search" placeholder="搜索团队或代表 Skill，例如 microsoft / openai / sentry" autocomplete="off" /></label><div class="toggle-group" role="group" aria-label="Official teams display mode"><button class="toggle-btn active" type="button" data-team-mode="top">Top 12</button><button class="toggle-btn" type="button" data-team-mode="all">All Teams</button></div></div><p class="score-note" id="officialTeamsSummary">正在生成官方团队星图……</p><div class="teams-grid" id="officialTeamsGrid"></div></section>
+      <section id="community-categories"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Community Categories Module</span><h2>社区 Skills：按分类推荐</h2></div><p>使用 <code>data.community_categories</code> 动态生成社区分类矩阵，过滤「${escapeHtml(EXCLUDED_CATEGORY)}」，按分类展示 Skill 数量、社区占比和代表推荐项目。</p></div><div class="team-toolbar"><label class="search-box"><span>⌕</span><input id="communityCategorySearch" type="search" placeholder="搜索分类或代表项目，例如 网络安全 / 金融分析 / RAG / code-review" autocomplete="off" /></label><div class="toggle-group" role="group" aria-label="Community categories display mode"><button class="toggle-btn active" type="button" data-category-mode="top">Top 12</button><button class="toggle-btn" type="button" data-category-mode="all">All Categories</button></div></div><p class="score-note" id="communityCategoriesSummary">正在生成社区分类星图……</p><div class="teams-grid" id="communityCategoriesGrid"></div></section>
+      <section id="community-skill-detail"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Community Skill Detail</span><h2>推荐详情：高价值社区 Skill 信号</h2></div><p>点击上方分类卡片或代表项目，可在此查看推荐 Skill 的评分、星级、仓库指标和 score_detail 维度拆解；默认展示全社区 Top 推荐。</p></div><div class="detail-panel card" id="communitySkillDetailPanel">正在生成推荐详情星图……</div></section>
+      <section id="skill-compare"><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Skill Compare Matrix</span><h2>推荐对比：多 Skill 横向比较</h2></div><p>复用 <code>data.community_categories[*].recommended</code> 已有字段，支持从 Top 推荐候选中选择 2-4 个社区 Skill，对比推荐分、仓库指标、评级和六维 score_detail。</p></div><div class="compare-panel card"><div class="compare-actions"><p class="score-note" id="skillCompareSummary" style="margin:0;">正在生成推荐对比矩阵……</p><button class="toggle-btn active" type="button" id="skillCompareReset">Reset Top 3</button></div><div class="compare-pool" id="skillComparePool"></div><div id="skillComparePanel"></div></div></section>
+      ${galaxyInsightHtml(overview,officialCompanies,communityCategories)}
+      ${trendRadarHtml(communityCategories)}
+      ${skillExplorerHtml(communityCategories)}
+      <section><div class="section-head"><div><span class="eyebrow"><span class="pulse"></span> Explore Modules</span><h2>Galaxy Navigation</h2></div><p>阶段二至阶段八模块均已开放：官方团队、社区分类、推荐详情、推荐对比、生态洞察、趋势雷达与技能探索器形成完整静态数据仪表盘。</p></div><div class="nav-grid"><article class="portal card"><div><span class="chip">Official Layer · Live</span><h3>Official Teams</h3><p>官方团队模块已开放：可按 Microsoft、OpenAI、Sentry 等团队浏览官方 Skills，并查看团队代表样本。</p></div><div class="arrow"><a class="chip" href="#official-teams">JUMP → 按团队浏览</a></div></article><article class="portal card"><div><span class="chip">Galaxy Insight · Live</span><h3>生态洞察</h3><p>阶段六生态洞察模块已开放：纯前端统计官方集中度、社区分布、语言/许可证、GitHub 热度与六维评分均值。</p></div><div class="arrow"><a class="chip" href="#galaxy-insight">JUMP → 查看洞察</a></div></article><article class="portal card"><div><span class="chip">Trend Radar · Live</span><h3>技能趋势雷达</h3><p>阶段七趋势雷达已开放：基于推荐分、GitHub 热度、更新时间、维护、文档与可信度计算社区 Skill 趋势指数。</p></div><div class="arrow"><a class="chip" href="#trend-radar">JUMP → 查看趋势</a></div></article><article class="portal card"><div><span class="chip">Skill Explorer · Live</span><h3>技能探索器</h3><p>阶段八技能探索器已开放：支持关键词搜索、分类/语言/许可证/评分/Stars 筛选和多指标排序。</p></div><div class="arrow"><a class="chip" href="#skill-explorer">JUMP → 探索 Skill</a></div></article></div></section>`;bindOfficialTeams(officialCompanies,overview.official_total||0);bindCommunityCategories(communityCategories,overview.community_total||0);bindCommunitySkillDetail(communityCategories);bindSkillCompare(communityCategories);bindSkillExplorer(communityCategories)}
+    fetch("../data/visualization_data.json").then(response=>{if(!response.ok)throw new Error(`HTTP ${response.status}`);return response.json()}).then(render).catch(error=>{document.getElementById("app").className="section error";document.getElementById("app").innerHTML=`读取数据失败：${escapeHtml(error.message)}。请通过本地服务器打开页面，例如运行 <code>python -m http.server 8000</code> 后访问 <code>http://localhost:8000/public/visualization.html</code>。`});
   </script>
 </body>
 </html>
