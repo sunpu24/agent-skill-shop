@@ -18,7 +18,9 @@
 \usepackage{tabularx}
 
 \geometry{left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm}
-\setstretch{1.35}
+% 按课程模板要求设置：正文宋体小四，固定行距约 20 磅。
+\setstretch{1.0}
+\AtBeginDocument{\zihao{-4}\songti\setlength{\baselineskip}{20pt}}
 \graphicspath{{figures_credit_default_overleaf/}}
 \captionsetup{font=small, labelfont=bf}
 \setlength{\tabcolsep}{5pt}
@@ -33,27 +35,41 @@
 
 \begin{document}
 \begin{titlepage}
+\songti
 \centering
-\vspace*{0.9cm}
-\noindent\makebox[\textwidth][c]{\raisebox{-9cm}[0pt][0pt]{\swufelogo}}\par
-\vspace{-\baselineskip}
-{\zihao{0}\heiti 西南财经大学\par}
+\vspace*{0.8cm}
+{\zihao{3}\heiti 《大数据可视化》课程论文/报告\par}
 \vspace{0.4cm}
-{\zihao{1} Southwestern University of Finance and Economics\par}
-\vspace{1.0cm}
-{\zihao{0}\heiti 课程论文\par}
-\vspace{3.5cm}
-\renewcommand{\arraystretch}{1.8}
-\begin{tabular}{>{\heiti}r p{9cm}}
-学年学期： & 2025--2026--2 \\
-课程名称： & 数据可视化 \\
-论文题目： & 基于多维评价模型的 AI Agent Skills 分领域推荐集合构建与可视化分析 \\
-小组成员： & 孙溥、魏振邦 \\
-学院： & 计算机与人工智能学院 \\
-年级专业： & 23级计算机科学与技术 \\
+{\zihao{-4}(2025--2026学年第2学期)\par}
+\vspace{1.8cm}
+{\zihao{3}\heiti 题目：基于多维评价模型的 AI Agent Skills 分领域推荐集合构建与可视化分析\par}
+\vspace{1.6cm}
+
+\renewcommand{\arraystretch}{1.9}
+\begin{tabular}{>{\heiti}p{3.2cm} p{9.5cm}}
+学生姓名： & 孙溥、魏振邦 \\
+学\hspace{2em}号： & 请填写 \\
+提交日期： & 2026年6月16日 \\
+上课时间： & 请填写 \\
+QQ/手机： & 请填写 \\
+所在学院： & 计算机与人工智能学院 \\
+专\hspace{2em}业： & 23级计算机科学与技术 \\
 \end{tabular}
+
+\vspace{1.2cm}
+\noindent\begin{tabular}{>{\heiti}p{3.2cm} p{9.5cm}}
+教师评语： & \\
+\end{tabular}
+\vspace{2.6cm}
+
+\noindent\begin{tabular}{p{12.7cm}}
+\hline
+\vspace{1.8cm} \\
+\hline
+\end{tabular}
+
 \vfill
-{\zihao{4} \today\par}
+\hfill {\heiti 本论文成绩评定：}\underline{\hspace{2.2cm}} 分\hspace{1cm}
 \end{titlepage}
 \renewcommand{\arraystretch}{1.15}
 
@@ -97,6 +113,12 @@
 
 数据预处理主要包括四个步骤。第一，解析原始 Skill 列表，提取名称、描述、链接和原始分类。第二，根据链接判断 Skill 来源，将其划分为官方 Skill 和社区 Skill。第三，对于社区 GitHub 项目，补充 Stars、Forks、主要语言、更新时间、README 长度等指标。第四，根据名称、描述和分类关键词，对社区 Skill 进行应用场景归类。
 
+为了满足课程对数据存储、预处理、清洗和重组能力的要求，本文进一步设计了较完整的数据处理流程。首先，在数据清洗阶段，对 Skill 名称、链接和描述字段进行统一格式化，去除空白字符、重复链接和无效记录；对于无法访问或字段缺失的 GitHub 仓库，保留其基础信息并在指标字段中设置缺失标记，避免直接删除造成样本偏差。其次，在数据转换阶段，将仓库更新时间统一转换为可比较的时间间隔变量，将 Stars、Forks、README 长度等数值指标归一化到统一区间，便于后续综合评分。再次，在数据重组阶段，分别生成官方 Skill 数据表、社区 Skill 数据表、场景统计表、评分明细表和推荐集合表，使原始的无序列表转化为可以分析和展示的结构化数据。最后，在质量控制阶段，通过统计总记录数、来源占比、场景分布和异常字段数量，检查处理结果是否与原始数据规模一致。
+
+上述流程体现了从原始网页列表到结构化分析数据集的完整处理链条：数据采集解决“从哪里来”的问题，数据清洗解决“能否使用”的问题，字段标准化解决“能否比较”的问题，场景分类和评分计算则解决“如何形成推荐结论”的问题。
+
+本文涉及的全部数据处理、评分计算、推荐集合生成和可视化绘制代码已开源，仓库地址为：\url{https://github.com/sunpu24/agent-skill-shop}。
+
 \section{推荐集合构建方法}
 
 \subsection{应用场景划分}
@@ -120,7 +142,9 @@
 
 \subsection{推荐等级划分}
 
-根据综合评分，本文将社区 Skill 映射为五档推荐等级：85 分及以上为五星"夯"，70--84 分为四星"顶级"，55--69 分为三星"人上人"，40--54 分为二星"NPC"，40 分以下为一星"拉完了"。该等级划分用于降低结果解释难度，使推荐集合不仅包含数值评分，也能提供直观的优先级判断。
+根据综合评分，本文将社区 Skill 映射为五档推荐等级：85 分及以上为五星“强烈推荐”，70--84 分为四星“优先推荐”，55--69 分为三星“一般推荐”，40--54 分为二星“谨慎使用”，40 分以下为一星“暂不推荐”。该等级划分用于降低结果解释难度，使推荐集合不仅包含数值评分，也能提供直观的优先级判断。相较于只展示分数，分级表达更便于读者快速理解不同 Skill 在实际选型中的优先级。
+
+从评分标准角度看，该模型并非简单地给项目排序，而是将数据可视化课程中的分析思路转化为可计算指标：场景匹配度对应问题定义和业务语义，GitHub 热度与维护活跃度反映外部使用反馈，文档质量和功能明确度反映项目可解释性，项目可信度则用于衡量实际采用风险。因此，综合评分既服务于推荐结果，也为后续图表分析提供了可解释的量化基础。
 
 \section{可视化分析结果}
 
@@ -334,6 +358,8 @@ googleworkspace & 17 & gws-shared & gws-drive & gws-sheets \\
 本文基于 AI Agent Skills 数据集，构建了一个面向不同应用领域的 Skill 推荐集合，并通过数据可视化方法解释推荐结果。研究表明，AI Agent Skills 生态既包含官方机构的大规模标准化供给，也包含社区项目的多领域创新扩展。通过领域划分和多维评分，可以在不同应用场景中筛选出更具代表性的 Skill，为开发者和使用者提供更清晰的资源选择依据。
 
 未来可以从三个方向进一步改进。第一，引入更多质量指标，如 Issue 活跃度、贡献者数量、提交频率和下载量。第二，使用文本语义模型改进场景分类，降低关键词规则带来的误差。第三，结合用户反馈或实际调用效果，建立更贴近真实使用体验的推荐模型。
+
+本文的全部代码已开源，详见 \url{https://github.com/sunpu24/agent-skill-shop}。
 
 \appendix
 

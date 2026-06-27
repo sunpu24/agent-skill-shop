@@ -1,8 +1,6 @@
 name: sync-clawhub
 
 on:
-  schedule:
-    - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
@@ -30,8 +28,10 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run sync script
-        run: python scripts/sync_clawhub.py
+      - name: ClawHub sync placeholder
+        run: |
+          echo "ClawHub sync is currently disabled because scripts/sync_clawhub.py does not exist."
+          echo "This workflow is kept for manual use only and will not change files."
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
 

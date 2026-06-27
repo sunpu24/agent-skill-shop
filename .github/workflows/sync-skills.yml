@@ -1,8 +1,6 @@
 name: Sync Skills from Upstream
 
 on:
-  schedule:
-    - cron: '0 2 * * *'
   workflow_dispatch:
     inputs:
       dry_run:
@@ -31,8 +29,11 @@ jobs:
         with:
           python-version: '3.11'
 
-      - name: Run sync script
-        run: python scripts/sync_skills.py
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Crawl latest skills data
+        run: python main.py --crawl
         env:
           DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
 
@@ -50,8 +51,8 @@ jobs:
         run: |
           git config user.name "GitHub Actions Bot"
           git config user.email "actions@github.com"
-          git add SKILL_SOURCES.json README.md
-          git commit -m "🔄 Auto-sync: Update skill sources from upstream [$(date +%Y-%m-%d)]"
+          git add data/skills.json data/skills_summary.json data/last_update.txt
+          git commit -m "🔄 Auto-sync: Update crawled skills data [$(date +%Y-%m-%d)]"
           git push
 
       - name: Summary
